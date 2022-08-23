@@ -14,7 +14,7 @@ type SvcAuthentication struct {
 // - providers [Array] ~ Maps of providers string token / identifiers
 //
 // - conf [*SvcConfig] ~ App conf instance pointer
-func NewSvcAuthentication(providers map[string]bool, repoUser *db.RepoUsers) *SvcAuthentication {
+func NewSvcAuthentication(providers map[string]bool, repoUser *db.RepoDrones) *SvcAuthentication {
 	k := &SvcAuthentication{AuthProviders: make(map[string]Provider)}
 
 	for v := range providers {

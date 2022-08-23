@@ -16,7 +16,7 @@ type Provider interface {
 
 type ProviderDrone struct {
 	// walletLocations string
-	repo *db.RepoUsers
+	repo *db.RepoDrones
 }
 
 func (p *ProviderDrone) GrantIntent(uCred *dto.UserCredIn, options interface{}) (*dto.GrantIntentResponse, *dto.Problem) {

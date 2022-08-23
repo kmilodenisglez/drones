@@ -1,6 +1,9 @@
 package endpoints
 
 import (
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
+	"github.com/kataras/iris/v12/hero"
 	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
 	"github.com/kmilodenisglez/drones.restapi/schema"
@@ -8,9 +11,6 @@ import (
 	"github.com/kmilodenisglez/drones.restapi/schema/mapper"
 	"github.com/kmilodenisglez/drones.restapi/service/auth"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
-	"github.com/kataras/iris/v12/hero"
 )
 
 type HAuth struct {
@@ -34,8 +34,8 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 	// filling providers
 	h.providers["drones"] = true
 
-	repoUsers := db.NewRepoUsers(svcC)
-	svcAuth := auth.NewSvcAuthentication(h.providers,&repoUsers)      // instantiating authentication Service
+	repoDrones := db.NewRepoDrones(svcC)
+	svcAuth := auth.NewSvcAuthentication(h.providers,&repoDrones)      // instantiating authentication Service
 
 	// registering unprotected router
 	authRouter := app.Party("/auth") // authorize
@@ -59,7 +59,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 
 		// --- DEPENDENCIES ---
 		hero.Register(DepObtainUserDid)
-		hero.Register(repoUsers)
+		hero.Register(repoDrones)
 
 		// --- REGISTERING ENDPOINTS ---
 		guardAuthRouter.Get("/logout", h.logout)
@@ -135,7 +135,7 @@ func (h HAuth) logout(ctx iris.Context) {
 // @Failure 401 {object} dto.Problem "err.unauthorized"
 // @Failure 500 {object} dto.Problem "err.generic
 // @Router /auth/user [get]
-func (h HAuth) userGet(ctx iris.Context, params dto.InjectedParam, r db.RepoUsers) {
+func (h HAuth) userGet(ctx iris.Context, params dto.InjectedParam, r db.RepoDrones) {
 	user, err := r.GetUser(params.Did)
 	if err != nil {
 		h.response.ResErr(dto.NewProblem(iris.StatusInternalServerError, schema.ErrBuntdb, err.Error()), &ctx)

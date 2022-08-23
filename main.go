@@ -75,7 +75,7 @@ func main() {
 	// region ======== ENDPOINT REGISTRATIONS ================================================
 
 	endpoints.NewAuthHandler(app, &MdwAuthChecker, svcResponse, svcConfig)
-	endpoints.NewBlockchainTxsHandler(app, &MdwAuthChecker, svcResponse, svcConfig) // Blockchain transactions handlers
+	endpoints.NewDronesHandler(app, &MdwAuthChecker, svcResponse, svcConfig) // Drones request handlers
 	// endregion =============================================================================
 
 	// region ======== SWAGGER REGISTRATION ==================================================

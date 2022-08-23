@@ -6,7 +6,7 @@ import (
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 )
 
-// Bearer Authentication token verification middleware
+// NewAuthCheckerMiddleware Bearer Authentication token verification middleware
 func NewAuthCheckerMiddleware(sigKey []byte) context.Handler {
 	checker := jwt.NewVerifier(jwt.HS256, sigKey)
 	checker.WithDefaultBlocklist()							// Enable server-side token block feature (even before its expiration time):
