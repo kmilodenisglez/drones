@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/Joker/hpp v1.0.0 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/go-openapi/spec v0.20.3 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/iris-contrib/swagger/v12 v12.2.0-alpha
