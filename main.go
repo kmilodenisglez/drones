@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/go-playground/validator/v10"
-	_ "github.com/kmilodenisglez/drones.restapi/docs"
-	//"github.com/kmilodenisglez/drones.restapi/service/utils"
 	"github.com/iris-contrib/swagger/v12"              // swagger middleware for Iris
 	"github.com/iris-contrib/swagger/v12/swaggerFiles" // swagger embed files
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/logger"
+	"github.com/kmilodenisglez/drones.restapi/api/endpoints"
+	"github.com/kmilodenisglez/drones.restapi/api/middlewares"
+	_ "github.com/kmilodenisglez/drones.restapi/docs"
+	"github.com/kmilodenisglez/drones.restapi/service/utils"
 
 	_ "github.com/lib/pq"
 )
-
 
 // @title drones
 // @version 0.1
@@ -63,7 +63,6 @@ func main() {
 		ctx.Next()
 	}
 
-
 	// built-ins
 	app.Use(logger.New())
 	app.UseRouter(crs) // Recovery middleware recovers from any panics and writes a 500 if there was one.
@@ -89,7 +88,6 @@ func main() {
 	// use swagger middleware to
 	app.Get("/swagger/{any:path}", swagger.CustomWrapHandler(sc, swaggerFiles.Handler))
 	// endregion =============================================================================
-
 
 	addr := fmt.Sprintf("%s:%s", svcConfig.ApiDocIp, svcConfig.DappPort)
 
