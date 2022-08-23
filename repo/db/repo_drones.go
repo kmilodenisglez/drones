@@ -2,6 +2,7 @@ package db
 
 import (
 	jsoniter "github.com/json-iterator/go"
+	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
 	"github.com/tidwall/buntdb"
@@ -14,6 +15,8 @@ type RepoDrones interface {
 	GetUser(field string, filterOptional ...bool) (*dto.User, error)
 	GetUsers() (*[]dto.User, error)
 	Exist(id string) error
+
+	GetDrones() (*[]dto.Drone, error)
 }
 
 type repoDrones struct {
@@ -136,6 +139,65 @@ func (r *repoDrones) Exist(id string) error {
 	return nil
 }
 
+func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
+	var drones = []dto.Drone{{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Lightweight,
+		WeightLimit:     120,
+		BatteryCapacity: 25,
+		State:           dto.IDLE,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Cruiserweight,
+		WeightLimit:     360,
+		BatteryCapacity: 45,
+		State:           dto.IDLE,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Middleweight,
+		WeightLimit:     240,
+		BatteryCapacity: 56.4,
+		State:           dto.DELIVERED,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Heavyweight,
+		WeightLimit:     420,
+		BatteryCapacity: 99.2,
+		State:           dto.LOADING,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Middleweight,
+		WeightLimit:     250,
+		BatteryCapacity: 35.6,
+		State:           dto.RETURNING,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Heavyweight,
+		WeightLimit:     420,
+		BatteryCapacity: 52.9,
+		State:           dto.DELIVERING,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Lightweight,
+		WeightLimit:     120,
+		BatteryCapacity: 12.9,
+		State:           dto.IDLE,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Cruiserweight,
+		WeightLimit:     345,
+		BatteryCapacity: 91.3,
+		State:           dto.LOADED,
+	},{
+		SerialNumber:    lib.GenerateUUIDStr(),
+		Model:           dto.Heavyweight,
+		WeightLimit:     498,
+		BatteryCapacity: 73.6,
+		State:           dto.LOADED,
+	}}
+
+	return &drones, nil
+}
 // endregion =============================================================================
 
 // region ======== PRIVATE AUX ===========================================================

@@ -27,7 +27,7 @@ type DronesHandler struct {
 // - svcC [utils.SvcConfig] ~ Configuration service instance
 func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR *utils.SvcResponse, svcC *utils.SvcConfig) DronesHandler { // --- VARS SETUP ---
 	repoDrones := db.NewRepoDrones(svcC)
-	svc := service.NewSvcDronesTxs(&repoDrones)
+	svc := service.NewSvcDronesReqs(&repoDrones)
 	// registering protected / guarded router
 	h := DronesHandler{svcR, &svc}
 

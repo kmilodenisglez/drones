@@ -38,7 +38,7 @@ func (droneModel DroneModel) String() string {
 type Drone struct {
 	SerialNumber    string     `json:"serialNumber" valid:"maxstringlength(100)"`
 	Model           DroneModel `json:"model"`
-	WeightLimit     int        `json:"weightLimit" valid:"range(0|500)"`
+	WeightLimit     int        `json:"weightLimit" valid:"range(5|500)"`
 	BatteryCapacity float64    `json:"batteryCapacity" valid:"range(0|100)"`
 	State           DroneState `json:"state"`
 }

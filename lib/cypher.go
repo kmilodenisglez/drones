@@ -76,7 +76,7 @@ func GenerateUUIDStr() string {
 
 func GenerateUUIDFormatDate() string {
 	bUUID := GenerateUUIDBytes()
-	uuid := fmt.Sprintf("%x-%x-%x-%x-%x", bUUID[0:4], bUUID[4:6], bUUID[6:8], bUUID[8:10], bUUID[10:])
+	uuid := idBytesToStr(bUUID)
 
 	currentTime := timestamppb.Now()
 	strNow := currentTime.AsTime().Format("20060102-150405")
