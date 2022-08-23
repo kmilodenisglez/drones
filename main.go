@@ -92,5 +92,7 @@ func main() {
 	addr := fmt.Sprintf("%s:%s", svcConfig.ApiDocIp, svcConfig.DappPort)
 
 	// run localhost
-	app.Listen(addr)
+	//app.Listen(addr)
+
+	app.Run(iris.Addr(addr))
 }

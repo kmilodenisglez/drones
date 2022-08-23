@@ -39,3 +39,7 @@
 .DS_Store
 
 vendor
+/drones.restapi
+/docs/docs.go
+/docs/swagger.yaml
+/docs/swagger.json
