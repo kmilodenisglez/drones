@@ -164,7 +164,7 @@ func (h DronesHandler) GetADrone(ctx iris.Context) {
 }
 
 // RegisterADrone registers a new drone
-// @Summary Registers a new drone
+// @Summary Registers a new drone, also updates a previously inserted drone
 // @description.markdown RegisterADroneDescription
 // @Tags drones
 // @Security ApiKeyAuth
@@ -177,7 +177,7 @@ func (h DronesHandler) GetADrone(ctx iris.Context) {
 // @Failure 400 {object} dto.Problem "err.processing_param"
 // @Failure 500 {object} dto.Problem "err.database_related"
 // @Failure 504 {object} dto.Problem "err.network"
-// @Router /drones/ [post]
+// @Router /drones [post]
 func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 	drone := new(dto.Drone)
 
