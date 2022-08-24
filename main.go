@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"regexp"
+
+	"github.com/asaskevich/govalidator"
 	"github.com/go-playground/validator/v10"
 	"github.com/iris-contrib/swagger/v12"              // swagger middleware for Iris
 	"github.com/iris-contrib/swagger/v12/swaggerFiles" // swagger embed files
@@ -63,19 +66,22 @@ func main() {
 		ctx.Next()
 	}
 
+	// activate govalidator package and adding new validators
+	initValidator()
+
 	// built-ins
 	app.Use(logger.New())
 	app.UseRouter(crs) // Recovery middleware recovers from any panics and writes a 500 if there was one.
 
 	// custom middleware
-	MdwAuthChecker := middlewares.NewAuthCheckerMiddleware([]byte(svcConfig.JWTSignKey))
+	mdwAuthChecker := middlewares.NewAuthCheckerMiddleware([]byte(svcConfig.JWTSignKey))
 
 	// endregion =============================================================================
 
 	// region ======== ENDPOINT REGISTRATIONS ================================================
 
-	endpoints.NewAuthHandler(app, &MdwAuthChecker, svcResponse, svcConfig)
-	endpoints.NewDronesHandler(app, &MdwAuthChecker, svcResponse, svcConfig) // Drones request handlers
+	endpoints.NewAuthHandler(app, &mdwAuthChecker, svcResponse, svcConfig)
+	endpoints.NewDronesHandler(app, &mdwAuthChecker, svcResponse, svcConfig) // Drones request handlers
 	// endregion =============================================================================
 
 	// region ======== SWAGGER REGISTRATION ==================================================
@@ -95,4 +101,18 @@ func main() {
 	//app.Listen(addr)
 
 	app.Run(iris.Addr(addr))
+}
+
+// Activate behavior to require all fields and adding new validators
+func initValidator() {
+	govalidator.SetFieldsRequiredByDefault(false)
+
+	// Add your own struct validation tags
+	govalidator.TagMap["customnamevalidation"] = govalidator.Validator(func(str string) bool {
+		return regexp.MustCompile("^[a-zA-Z0-9_-]*$").MatchString(str)
+	})
+
+	govalidator.TagMap["customcodevalidation"] = govalidator.Validator(func(str string) bool {
+		return regexp.MustCompile("^[A-Z0-9_]*$").MatchString(str)
+	})
 }

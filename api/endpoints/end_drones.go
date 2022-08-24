@@ -53,7 +53,7 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 		// --- GROUP / PARTY MIDDLEWARES ---
 		guardMedicationsRouter.Use(*mdwAuthChecker)
 
-		guardMedicationsRouter.Get("/", h.GetDrones)
+		guardMedicationsRouter.Get("/", h.GetMedications)
 
 		// --- DEPENDENCIES ---
 		hero.Register(DepObtainUserDid)
@@ -101,14 +101,14 @@ func (h DronesHandler) GetDrones(ctx iris.Context) {
 // @Failure 400 {object} dto.Problem "err.processing_param"
 // @Failure 502 {object} dto.Problem "err.bad_gateway"
 // @Failure 504 {object} dto.Problem "err.network"
-// @Router /drones [get]
+// @Router /medications [get]
 func (h DronesHandler) GetMedications(ctx iris.Context) {
-	drones, problem := (*h.service).GetDronesSvc()
+	medications, problem := (*h.service).GetMedications()
 	if problem != nil {
 		h.response.ResErr(problem, &ctx)
 		return
 	}
-	h.response.ResOKWithData(drones, &ctx)
+	h.response.ResOKWithData(medications, &ctx)
 }
 
 // endregion ======== Medications ======================================================

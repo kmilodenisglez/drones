@@ -211,7 +211,7 @@ func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
 
 func (r *repoDrones) GetMedications() (*[]dto.Medication, error) {
 	var medications = []dto.Medication{{
-		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Name:   gofakeit.Password(true, true, true, false, false, 12),
 		Weight: 10,
 		Code:   gofakeit.Password(false, true, true, false, false, 10),
 		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),

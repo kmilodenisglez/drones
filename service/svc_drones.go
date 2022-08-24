@@ -68,6 +68,8 @@ func (s *svcDronesReqs) GetDronesSvc() (*[]dto.Drone, *dto.Problem){
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
+
+	//list := []interface{}{res}
 	return res, nil
 }
 func (s *svcDronesReqs) GetMedications() (*[]dto.Medication, *dto.Problem){
