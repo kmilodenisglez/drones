@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/hero"
@@ -55,7 +56,7 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 		guardTxsRouter.Use(*mdwAuthChecker)
 
 		guardTxsRouter.Get("/", h.GetDrones)
-		guardTxsRouter.Get("/{state:int}", h.GetDronesByState)
+		guardTxsRouter.Get("/{serialNumber:string}", h.GetADrone)
 
 		// --- DEPENDENCIES ---
 		hero.Register(DepObtainUserDid)
@@ -97,6 +98,35 @@ func (h DronesHandler) PopulateDB(ctx iris.Context) {
 	h.response.ResOK(&ctx)
 }
 
+// GetADrone get a drone
+// @Summary Get a drone by serialNumber
+// @description.markdown GetADroneDescription
+// @Tags drones
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Param	Authorization	header	string	true 	"Insert access token"          default(Bearer <Add access token here>)
+// @Param   serialNumber    path    string  true    "Serial number of a drone"     Format(string)
+// @Success 200 {object} dto.Drone "OK"
+// @Failure 400 {object} dto.Problem "err.processing_param"
+// @Failure 500 {object} dto.Problem "err.database_related"
+// @Failure 504 {object} dto.Problem "err.network"
+// @Router /drones/{serialNumber} [get]
+func (h DronesHandler) GetADrone(ctx iris.Context) {
+	// checking the serialNumber param
+	serialNumber := ctx.Params().GetString("serialNumber")
+	if serialNumber == "" {
+		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: schema.ErrDetInvalidField}, &ctx)
+		return
+	}
+	drone, problem := (*h.service).GetADroneSvc(serialNumber)
+	if problem != nil {
+		h.response.ResErr(problem, &ctx)
+		return
+	}
+	h.response.ResOKWithData(drone, &ctx)
+}
+
 // GetDrones get drones
 // @Summary Get drones
 // @description.markdown GetDronesDescription
@@ -105,57 +135,31 @@ func (h DronesHandler) PopulateDB(ctx iris.Context) {
 // @Accept  json
 // @Produce json
 // @Param	Authorization	header	string	true 	"Insert access token" default(Bearer <Add access token here>)
+// @Param   state           query   int     false   "drone state"         Enums(0, 1, 2, 3, 4, 5)
 // @Success 200 {object} []dto.Drone "OK"
 // @Failure 400 {object} dto.Problem "err.processing_param"
 // @Failure 500 {object} dto.Problem "err.database_related"
 // @Failure 504 {object} dto.Problem "err.network"
 // @Router /drones [get]
 func (h DronesHandler) GetDrones(ctx iris.Context) {
-	drones, problem := (*h.service).GetDronesSvc()
+	qState, err := ctx.URLParamInt("state")
+	if err != nil && err != iris.ErrNotFound {
+		h.response.ResErr(dto.NewProblem(iris.StatusInternalServerError, schema.ErrParamURL, err.Error()), &ctx)
+		return
+	}
+
+	var state = ""
+	// if no query parameter is passed then we show all drones
+	if qState != -1 {
+		state = fmt.Sprintf("\"state\":%d", qState)
+	}
+	drones, problem := (*h.service).GetDronesSvc(state)
 	if problem != nil {
 		h.response.ResErr(problem, &ctx)
 		return
 	}
 	h.response.ResOKWithData(drones, &ctx)
 }
-
-type Example struct {
-	// Sort order:
-	// * asc - Ascending, from A to Z.
-	// * desc - Descending, from Z to A.
-	Order string `enums:"asc,desc"`
-}
-
-// GetDronesByState get drones filter by state
-// @Summary Get drones filter by state
-// @description.markdown GetDronesByStateDescription
-// @Tags drones
-// @Security ApiKeyAuth
-// @Accept  json
-// @Produce json
-// @Param	Authorization	header	string	true 	"Insert access token" default(Bearer <Add access token here>)
-// @Param   state           path    string  true    "drone state"         Enums(0, 1, 2, 3, 4, 5)
-// @Success 200 {object} []dto.Drone "OK"
-// @Failure 400 {object} dto.Problem "err.processing_param"
-// @Failure 500 {object} dto.Problem "err.database_related"
-// @Failure 504 {object} dto.Problem "err.network"
-// @Router /drones/{state} [get]
-func (h DronesHandler) GetDronesByState(ctx iris.Context) {
-	// checking the state param
-	state := ctx.Params().GetString("state")
-	if state == "" {
-		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: schema.ErrDetInvalidField}, &ctx)
-		return
-	}
-	// we filter by state
-	drones, problem := (*h.service).GetDronesSvc("\"state\":"+state)
-	if problem != nil {
-		h.response.ResErr(problem, &ctx)
-		return
-	}
-	h.response.ResOKWithData(drones, &ctx)
-}
-
 
 // endregion =============================================================================
 

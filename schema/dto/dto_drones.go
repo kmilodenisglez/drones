@@ -35,6 +35,8 @@ func (droneModel DroneModel) String() string {
 	return names[droneModel]
 }
 
+var DroneStateID = map[string]int{"IDLE": 0, "LOADING": 1, "LOADED": 2, "DELIVERING": 3, "DELIVERED": 4, "RETURNING": 5}
+
 type ConfigDB struct {
 	IsPopulated bool `json:"isPopulated"`
 }

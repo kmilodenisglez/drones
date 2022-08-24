@@ -27,6 +27,7 @@ type RepoDrones interface {
 	GetUsers() (*[]dto.User, error)
 	Exist(id string) error
 
+	GetDrone(serialNumber string) (*dto.Drone, error)
 	GetDrones(filter string) (*[]dto.Drone, error)
 
 	GetMedications() (*[]dto.Medication, error)
@@ -257,6 +258,35 @@ func (r *repoDrones) Exist(id string) error {
 }
 
 // region ======== Drones ======================================================
+
+func (r *repoDrones) GetDrone(serialNumber string) (*dto.Drone, error) {
+	db, err := r.loadDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	drone := dto.Drone{}
+
+	db.CreateIndex("drone_state", "drone:*", buntdb.IndexJSON("batteryCapacity"))
+	err = db.View(func(tx *buntdb.Tx) error {
+		value, err := tx.Get("drone:"+serialNumber)
+		if err != nil{
+			return err
+		}
+		err = jsoniter.UnmarshalFromString(value, &drone)
+		if err != nil{
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &drone, nil
+}
+
 
 // GetDrones A read-only transaction, return drones in db
 // allows filtering by a specific string field

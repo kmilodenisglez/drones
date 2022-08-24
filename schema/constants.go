@@ -30,6 +30,7 @@ const (
 	ErrUnmarshalBcTxsResponse = "err.unmarshal_bc_txs_response"
 	ErrCryptProc              = "err.crypt_material_processing"
 	ErrCryptProcMissing       = "err.crypt_material_processing.missing_files"
+	ErrParamURL               = "err.query_parameter"
 )
 
 // endregion =============================================================================

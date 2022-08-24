@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
 	"github.com/kmilodenisglez/drones.restapi/schema"
@@ -24,6 +25,7 @@ type ISvcDrones interface {
 
 	// drone functions
 
+	GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem)
 	GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem)
 	GetMedications() (*[]dto.Medication, *dto.Problem)
 }
@@ -89,12 +91,27 @@ func (s *svcDronesReqs) GetUsersSvc()  (*[]dto.User, *dto.Problem) {
 	return res, nil
 }
 
+func (s *svcDronesReqs) GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem){
+	fmt.Println("--> 1", serialNumber)
+	res, err := (*s.reposDrones).GetDrone(serialNumber)
+	fmt.Println("--> 2", res)
+	// Getting non-existent values will cause an ErrNotFound error.
+	if err == buntdb.ErrNotFound {
+		return nil, dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, err.Error())
+	} else if err != nil {
+		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+
+	return res, nil
+}
+
 func (s *svcDronesReqs) GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem){
 	var filter = ""
 	if len(filters) > 0 {
 		filter = filters[0]
 	}
 
+	fmt.Println("state ", filter)
 	res, err := (*s.reposDrones).GetDrones(filter)
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())

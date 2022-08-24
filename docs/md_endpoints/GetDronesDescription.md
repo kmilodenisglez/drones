@@ -1,4 +1,5 @@
-GetDrones request.
+Get all drones or you can filter by status
+
 
 Model enum for a Drone:
 ```text
