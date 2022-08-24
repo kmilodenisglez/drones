@@ -1,0 +1,6 @@
+GetMedications request.
+
+🌎
+````json
+
+````
