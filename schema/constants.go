@@ -2,7 +2,7 @@ package schema
 
 // region ======== i18n ERROR KEYS =======================================================
 const (
-	ErrAuth               = "err.authentication"
+	ErrAuth                   = "err.authentication"
 	ErrGeneric                = "err.generic"
 	ErrInvalidEnvVar          = "err.invalid.environment.var"
 	ErrRepositoryOps          = "err.repo_ops"
@@ -18,10 +18,12 @@ const (
 	ErrWrongAuthProvider      = "err.wrong_auth_provider"
 	ErrUnauthorized           = "err.unauthorized"
 	ErrFileProc               = "err.processing_file"
-	ErrFile               = "err.system_file_related"
-	ErrBuntdbItemNotFound = "err.database_related.item_not_found"
-	ErrBuntdb             = "err.database_related"
-	ErrBuntdbIndex        = "err.database_index_related"
+	ErrFile                   = "err.system_file_related"
+	ErrBuntdbItemNotFound     = "err.database_related.item_not_found"
+	ErrBuntdb                 = "err.database_related"
+	ErrBuntdbPopulated        = "err.database_populated"
+	ErrBuntdbNotPopulated     = "err.database_not_populated"
+	ErrBuntdbIndex            = "err.database_index_related"
 	ErrStorageProc            = "err.storage_service_processing"
 	ErrVal                    = "err.invalid_data"
 	ErrBlockchainTxs          = "err.blockchain_tx"
@@ -55,8 +57,8 @@ const (
 
 const (
 	// ENV VARS
-	EnvConfigPath    = "HLF_DAPP_CONFIG"
-	EnvJWTSignKey    = "HLF_DAPP_JWT_SIGN_KEY"
+	EnvConfigPath = "HLF_DAPP_CONFIG"
+	EnvJWTSignKey = "HLF_DAPP_JWT_SIGN_KEY"
 )
 
 // endregion =============================================================================

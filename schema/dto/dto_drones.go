@@ -35,16 +35,20 @@ func (droneModel DroneModel) String() string {
 	return names[droneModel]
 }
 
+type ConfigDB struct {
+	IsPopulated bool `json:"isPopulated"`
+}
+
 type Drone struct {
 	SerialNumber    string     `json:"serialNumber" valid:"maxstringlength(100)"`
 	Model           DroneModel `json:"model"`
-	WeightLimit     int        `json:"weightLimit" valid:"range(5|500)"`
+	WeightLimit     int        `json:"weightLimit" valid:"range(0|500)"`
 	BatteryCapacity float64    `json:"batteryCapacity" valid:"range(0|100)"`
 	State           DroneState `json:"state"`
 }
 type Medication struct {
 	Name   string  `json:"name" valid:"customnamevalidation"`
 	Weight float64 `json:"weight"`
-	Code   string  `json:"code" valid:"uppercase,customcodevalidation"`
+	Code   string  `json:"code" valid:"uppercase,customcodevalidation"`  // we assume that the code is unique
 	Image  string  `json:"image" valid:"base64"`
 }

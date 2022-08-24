@@ -10,12 +10,12 @@ import (
 
 // ToAccessTokenDataV region ======== AUTHORIZATION =========================================================
 // dto.GrantIntentResponse to dto.AccessTokenData
-// TODO ground the rol idea, according to the Evote app logic
+// TODO: ground the rol idea, according to the Drone app logic
 func ToAccessTokenDataV(obj *dto.GrantIntentResponse) *dto.AccessTokenData {
 	// claims := dto.Claims{ Sub: obj.Identifier, Rol: "undefined" }
 	claims := dto.InjectedParam{ Did: obj.DID, Username: obj.Identifier }
 
-	return &dto.AccessTokenData{ Scope: strings.Fields("api.hlf.evote.dapp"), Claims: claims }
+	return &dto.AccessTokenData{ Scope: strings.Fields("api.drones"), Claims: claims }
 }
 
 // endregion =============================================================================

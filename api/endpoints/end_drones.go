@@ -32,8 +32,20 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 	h := DronesHandler{svcR, &svc}
 
 	// registering unprotected router
-	// authRouter := app.Party("/drones") // unauthorized
-	// { }
+	authRouter := app.Party("/database") // unauthorized
+	{
+		authRouter.Post("/populate", h.PopulateDB)
+	}
+
+	// registering protected / guarded router
+	guardTxsDatabase := app.Party("/database")
+	{
+		// --- GROUP / PARTY MIDDLEWARES ---
+		guardTxsDatabase.Use(*mdwAuthChecker)
+
+		// --- DEPENDENCIES ---
+		hero.Register(DepObtainUserDid)
+	}
 
 	// registering protected / guarded router
 	guardTxsRouter := app.Party("/drones")
@@ -62,10 +74,31 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 	return h
 }
 
+// PopulateDB
+// @Summary Populate the database with fake data
+// @description.markdown PopulateDbDescription
+// @Tags database
+// @Accept  json
+// @Produce json
+// @Success 204 "OK"
+// @Failure 401 {object} dto.Problem "err.unauthorized"
+// @Failure 400 {object} dto.Problem "err.processing_param"
+// @Failure 500 {object} dto.Problem "err.database_related"
+// @Failure 504 {object} dto.Problem "err.network"
+// @Router /database/populate [post]
+func (h DronesHandler) PopulateDB(ctx iris.Context) {
+	problem := (*h.service).PopulateDBSvc()
+	if problem != nil {
+		h.response.ResErr(problem, &ctx)
+		return
+	}
+	h.response.ResOK(&ctx)
+}
+
 // GetDrones get drones
 // @Summary Get drones
 // @description.markdown GetDronesDescription
-// @Tags Txs.drones
+// @Tags drones
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
@@ -92,7 +125,7 @@ func (h DronesHandler) GetDrones(ctx iris.Context) {
 // GetMedications get medications
 // @Summary Get medications
 // @description.markdown GetMedicationsDescription
-// @Tags Txs.medications
+// @Tags medications
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json

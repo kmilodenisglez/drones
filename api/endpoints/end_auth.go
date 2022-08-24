@@ -9,6 +9,7 @@ import (
 	"github.com/kmilodenisglez/drones.restapi/schema"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 	"github.com/kmilodenisglez/drones.restapi/schema/mapper"
+	"github.com/kmilodenisglez/drones.restapi/service"
 	"github.com/kmilodenisglez/drones.restapi/service/auth"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
 )
@@ -36,6 +37,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 
 	repoDrones := db.NewRepoDrones(svcC)
 	svcAuth := auth.NewSvcAuthentication(h.providers,&repoDrones)      // instantiating authentication Service
+	svcDrones := service.NewSvcDronesReqs(&repoDrones)
 
 	// registering unprotected router
 	authRouter := app.Party("/auth") // authorize
@@ -44,7 +46,8 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 
 		// --- DEPENDENCIES ---
 		hero.Register(depObtainUserCred)
-		hero.Register(svcAuth) // as an alternative, we can put these dependencies as property in the HAuth struct, as we are doing in the rest of the endpoints / handlers
+		hero.Register(svcAuth) // as an alternative, we can put these dependencies as property in the struct HAuth, as we are doing in the rest of the endpoints / handlers
+		hero.Register(svcDrones)
 
 		// --- REGISTERING ENDPOINTS ---
 		// authRouter.Post("/<provider>")	// provider is the auth provider to be used.
@@ -84,8 +87,15 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 // @Failure 504 {object} dto.Problem "err.network"
 // @Failure 500 {object} dto.Problem "err.json_parse"
 // @Router /auth [post]
-func (h HAuth) authIntent(ctx iris.Context, uCred *dto.UserCredIn, svcAuth *auth.SvcAuthentication) {
+func (h HAuth) authIntent(ctx iris.Context, uCred *dto.UserCredIn, svcAuth *auth.SvcAuthentication, r service.ISvcDrones) {
 	provider := "drones"
+
+	populate := r.IsPopulateDBSvc()
+	if !populate {
+		h.response.ResErr(&dto.Problem{Status: iris.StatusInternalServerError, Title: schema.ErrBuntdbNotPopulated, Detail: "The database has not been populated yet"}, &ctx)
+		return
+	}
+
 	authGrantedData, problem := svcAuth.AuthProviders[provider].GrantIntent(uCred, nil) // requesting authorization to evote (provider) mechanisms in this case
 	if problem != nil {                                                                 // check for errors
 		h.response.ResErr(problem, &ctx)
