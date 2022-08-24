@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/base64"
 	"errors"
+
 	"github.com/brianvoe/gofakeit/v6"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kmilodenisglez/drones.restapi/lib"
@@ -257,9 +258,31 @@ func (r *repoDrones) Exist(id string) error {
 // region ======== Drones ======================================================
 
 func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
-	var drones = fakeDrones()
+	db, err := r.loadDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
 
-	return &drones, nil
+	drone := dto.Drone{}
+	dronesList := make([]dto.Drone, 0)
+	// custom index: sort drones descending by battery capacity
+	db.CreateIndex("drone_state", "drone:*", buntdb.IndexJSON("batteryCapacity"))
+	err = db.View(func(tx *buntdb.Tx) error {
+		err := tx.Descend("drone_state", func(key, value string) bool {
+			err = jsoniter.UnmarshalFromString(value, &drone)
+			if err == nil {
+				dronesList = append(dronesList, drone)
+			}
+			return err == nil
+		})
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &dronesList, nil
 }
 
 // endregion ======== Drones ======================================================
