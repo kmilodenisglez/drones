@@ -48,14 +48,14 @@ func (s *svcDronesReqs) IsPopulateDBSvc() bool {
 func (s *svcDronesReqs) PopulateDBSvc() *dto.Problem {
 	log.Println("1")
 	err := (*s.reposDrones).PopulateDB()
-	log.Println("2: ", err)
 
 	switch {
 	case err == buntdb.ErrNotFound:
 		return dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, err.Error())
-	case err.Error() == schema.ErrBuntdbPopulated:
-		return dto.NewProblem(iris.StatusInternalServerError, schema.ErrBuntdbPopulated, "the database has already been populated")
 	case err != nil:
+		if err.Error() == schema.ErrBuntdbPopulated {
+			return dto.NewProblem(iris.StatusInternalServerError, schema.ErrBuntdbPopulated, "the database has already been populated")
+		}
 		return dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
 	return nil

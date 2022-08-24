@@ -73,7 +73,7 @@ func (r *repoDrones) PopulateDB() error {
 	err = db.Update(func(tx *buntdb.Tx) error {
 		for i := 0; i < len(fakeUsers); i++ {
 			res, err := jsoniter.MarshalToString(fakeUsers[i])
-			log.Println("M1: ", res)
+			log.Printf("user #%d: %s", i, res)
 			if err != nil {
 				return err
 			}
@@ -294,18 +294,20 @@ func isPopulated(db *buntdb.DB) bool {
 	err := db.View(func(tx *buntdb.Tx) error {
 		value, err := tx.Get("config")
 		if err != nil{
-			log.Println("Get Error: in IsPopulated func")
 			return err
 		}
 		err = jsoniter.UnmarshalFromString(value, &configDB)
 		if err != nil{
-			log.Println("Unmarshal Error: in IsPopulated func")
+			log.Println("Unmarshal Error in IsPopulated func: ", err)
 			return err
 		}
 		return nil
 	})
-	if err != nil {
+	if err == buntdb.ErrNotFound {
+		log.Println("Database not found")
 		return false
+	} else if err != nil {
+		panic(err)
 	}
 
 	return configDB.IsPopulated
