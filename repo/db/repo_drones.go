@@ -29,6 +29,7 @@ type RepoDrones interface {
 
 	GetDrone(serialNumber string) (*dto.Drone, error)
 	GetDrones(filter string) (*[]dto.Drone, error)
+	RegisterDrone(drone *dto.Drone) error
 
 	GetMedications() (*[]dto.Medication, error)
 }
@@ -259,6 +260,7 @@ func (r *repoDrones) Exist(id string) error {
 
 // region ======== Drones ======================================================
 
+// GetDrone get a specific drone
 func (r *repoDrones) GetDrone(serialNumber string) (*dto.Drone, error) {
 	db, err := r.loadDB()
 	if err != nil {
@@ -286,7 +288,6 @@ func (r *repoDrones) GetDrone(serialNumber string) (*dto.Drone, error) {
 
 	return &drone, nil
 }
-
 
 // GetDrones A read-only transaction, return drones in db
 // allows filtering by a specific string field
@@ -330,6 +331,32 @@ func (r *repoDrones) GetDrones(filter string) (*[]dto.Drone, error) {
 	}
 
 	return &dronesList, nil
+}
+
+func (r *repoDrones) RegisterDrone(drone *dto.Drone) error {
+	db, err := r.loadDB()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	log.Printf("writing the drone '%s' in database", drone.SerialNumber)
+	err = db.Update(func(tx *buntdb.Tx) error {
+		res, err := jsoniter.MarshalToString(drone)
+		if err != nil {
+			return err
+		}
+		_, _, err = tx.Set("drone:"+drone.SerialNumber, res, nil)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	log.Println("successfully added drone")
+	return  nil
 }
 
 // endregion ======== Drones ======================================================

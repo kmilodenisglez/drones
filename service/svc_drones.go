@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
 	"github.com/kmilodenisglez/drones.restapi/schema"
@@ -19,7 +18,7 @@ type ISvcDrones interface {
 
 	// user functions
 
-	ExistUserSvc(id string)  (bool, *dto.Problem)
+	ExistUserSvc(id string) (bool, *dto.Problem)
 	GetUserSvc(id string, filter bool) (*dto.User, *dto.Problem)
 	GetUsersSvc() (*[]dto.User, *dto.Problem)
 
@@ -27,6 +26,10 @@ type ISvcDrones interface {
 
 	GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem)
 	GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem)
+	RegisterDroneSvc(drone *dto.Drone) *dto.Problem
+
+	// medication functions
+
 	GetMedications() (*[]dto.Medication, *dto.Problem)
 }
 
@@ -38,7 +41,7 @@ type svcDronesReqs struct {
 
 // NewSvcDronesReqs instantiate the Drones request services
 func NewSvcDronesReqs(reposDrones *db.RepoDrones) ISvcDrones {
-	return &svcDronesReqs{reposDrones }
+	return &svcDronesReqs{reposDrones}
 }
 
 // region ======== METHODS ======================================================
@@ -75,7 +78,7 @@ func (s *svcDronesReqs) ExistUserSvc(id string) (bool, *dto.Problem) {
 	return true, nil
 }
 
-func (s *svcDronesReqs) GetUserSvc(id string, filter bool)  (*dto.User, *dto.Problem) {
+func (s *svcDronesReqs) GetUserSvc(id string, filter bool) (*dto.User, *dto.Problem) {
 	res, err := (*s.reposDrones).GetUser(id, filter)
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
@@ -83,7 +86,7 @@ func (s *svcDronesReqs) GetUserSvc(id string, filter bool)  (*dto.User, *dto.Pro
 	return res, nil
 }
 
-func (s *svcDronesReqs) GetUsersSvc()  (*[]dto.User, *dto.Problem) {
+func (s *svcDronesReqs) GetUsersSvc() (*[]dto.User, *dto.Problem) {
 	res, err := (*s.reposDrones).GetUsers()
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
@@ -91,10 +94,9 @@ func (s *svcDronesReqs) GetUsersSvc()  (*[]dto.User, *dto.Problem) {
 	return res, nil
 }
 
-func (s *svcDronesReqs) GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem){
-	fmt.Println("--> 1", serialNumber)
+// GetADroneSvc get a specific drone
+func (s *svcDronesReqs) GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem) {
 	res, err := (*s.reposDrones).GetDrone(serialNumber)
-	fmt.Println("--> 2", res)
 	// Getting non-existent values will cause an ErrNotFound error.
 	if err == buntdb.ErrNotFound {
 		return nil, dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, err.Error())
@@ -105,13 +107,12 @@ func (s *svcDronesReqs) GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Prob
 	return res, nil
 }
 
-func (s *svcDronesReqs) GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem){
+func (s *svcDronesReqs) GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem) {
 	var filter = ""
 	if len(filters) > 0 {
 		filter = filters[0]
 	}
 
-	fmt.Println("state ", filter)
 	res, err := (*s.reposDrones).GetDrones(filter)
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
@@ -119,7 +120,16 @@ func (s *svcDronesReqs) GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Prob
 
 	return res, nil
 }
-func (s *svcDronesReqs) GetMedications() (*[]dto.Medication, *dto.Problem){
+
+func (s *svcDronesReqs) RegisterDroneSvc(drone *dto.Drone) *dto.Problem {
+	err := (*s.reposDrones).RegisterDrone(drone)
+	if err != nil {
+		return dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+	return nil
+}
+
+func (s *svcDronesReqs) GetMedications() (*[]dto.Medication, *dto.Problem) {
 	res, err := (*s.reposDrones).GetMedications()
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
