@@ -35,22 +35,21 @@ func (droneModel DroneModel) String() string {
 	return names[droneModel]
 }
 
-var DroneStateID = map[string]int{"IDLE": 0, "LOADING": 1, "LOADED": 2, "DELIVERING": 3, "DELIVERED": 4, "RETURNING": 5}
-
 type ConfigDB struct {
 	IsPopulated bool `json:"isPopulated"`
 }
 
 type Drone struct {
 	SerialNumber    string     `json:"serialNumber" valid:"maxstringlength(100)"`
-	Model           DroneModel `json:"model"`
-	WeightLimit     int        `json:"weightLimit" valid:"range(0|500)"`
+	Model           DroneModel `json:"model" valid:"drone_enum_validation~unknown drone model"`
+	WeightLimit     int        `json:"weightLimit" valid:"required~the weight limit is between 1 and 500 gr,range(1|500)~the weight limit is between 1 and 500 gr"`
 	BatteryCapacity float64    `json:"batteryCapacity" valid:"range(0|100)"`
-	State           DroneState `json:"state"`
+	State           DroneState `json:"state" valid:"drone_enum_validation~unknown drone state"`
 }
+
 type Medication struct {
-	Name   string  `json:"name" valid:"customnamevalidation"`
+	Name   string  `json:"name" valid:"medication_name_validation~invalid name (allowed only letters - numbers - ‘-‘ - ‘_’)"`
 	Weight float64 `json:"weight"`
-	Code   string  `json:"code" valid:"uppercase,customcodevalidation"` // we assume that the code is unique
+	Code   string  `json:"code" valid:"medication_code_validation~invalid code (allowed only upper case letters - underscore and numbers)"` // we assume that the code is unique
 	Image  string  `json:"image" valid:"base64"`
 }

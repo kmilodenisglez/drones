@@ -108,11 +108,18 @@ func initValidator() {
 	govalidator.SetFieldsRequiredByDefault(false)
 
 	// Add your own struct validation tags
-	govalidator.TagMap["customnamevalidation"] = govalidator.Validator(func(str string) bool {
+	// validates medication name
+	govalidator.TagMap["medication_name_validation"] = func(str string) bool {
 		return regexp.MustCompile("^[a-zA-Z0-9_-]*$").MatchString(str)
-	})
+	}
 
-	govalidator.TagMap["customcodevalidation"] = govalidator.Validator(func(str string) bool {
+	// validates medication code
+	govalidator.TagMap["medication_code_validation"] = func(str string) bool {
 		return regexp.MustCompile("^[A-Z0-9_]*$").MatchString(str)
-	})
+	}
+
+	// validates that an enum is within the interval
+	govalidator.TagMap["drone_enum_validation"] = func(str string) bool {
+		return str != "unknown"
+	}
 }
