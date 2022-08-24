@@ -97,7 +97,7 @@ func (r *repoDrones) PopulateDB() error {
 				return err
 			}
 			// add drone value with "serialnumber" key
-			_, _, err = tx.Set(fakeDrones[i].SerialNumber, res, nil)
+			_, _, err = tx.Set("drone:"+fakeDrones[i].SerialNumber, res, nil)
 			if err != nil {
 				return err
 			}
@@ -117,7 +117,7 @@ func (r *repoDrones) PopulateDB() error {
 				return err
 			}
 			// add drone value with "code" key
-			_, _, err = tx.Set(fakeMedications[i].Code, res, nil)
+			_, _, err = tx.Set("med:"+fakeMedications[i].Code, res, nil)
 			if err != nil {
 				return err
 			}
