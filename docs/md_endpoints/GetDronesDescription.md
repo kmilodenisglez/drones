@@ -1,4 +1,4 @@
-Example operation.
+GetDrones request.
 
 🌎
 ````json

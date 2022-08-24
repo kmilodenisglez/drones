@@ -19,6 +19,7 @@ type ISvcDrones interface {
 	GetUsersSvc() (*[]dto.User, *dto.Problem)
 
 	GetDronesSvc() (*[]dto.Drone, *dto.Problem)
+	GetMedications() (*[]dto.Medication, *dto.Problem)
 }
 
 type svcDronesReqs struct {
@@ -64,6 +65,13 @@ func (s *svcDronesReqs) GetUsersSvc()  (*[]dto.User, *dto.Problem) {
 
 func (s *svcDronesReqs) GetDronesSvc() (*[]dto.Drone, *dto.Problem){
 	res, err := (*s.reposDrones).GetDrones()
+	if err != nil {
+		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+	return res, nil
+}
+func (s *svcDronesReqs) GetMedications() (*[]dto.Medication, *dto.Problem){
+	res, err := (*s.reposDrones).GetMedications()
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}

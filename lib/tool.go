@@ -1,9 +1,9 @@
 package lib
 
 import (
-	"github.com/kmilodenisglez/drones.restapi/schema"
 	"encoding/json"
 	"fmt"
+	"github.com/kmilodenisglez/drones.restapi/schema"
 
 	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"
@@ -123,12 +123,15 @@ func DeepCopy(v interface{}) (interface{}, error) {
 	return vptr.Elem().Interface(), err
 }
 
-func NormalizeString(text string) string {
-	lower := strings.ToLower(text)
+func NormalizeString(text string, upper bool) string {
+	if upper {
+		text = strings.ToUpper(text)
+	}
+
 	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), runes.Remove(runes.In(unicode.Space)), norm.NFC) // Mn: nonspacing marks
-	result, _, err := transform.String(t, lower)
+	result, _, err := transform.String(t, text)
 	if err != nil {
-		return lower
+		return text
 	}
 
 	return result

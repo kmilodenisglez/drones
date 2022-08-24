@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 	"github.com/kataras/iris/v12"
+	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 )
 
 
@@ -38,7 +38,7 @@ func (s SvcResponse) ResWithDataStatus(status int, data interface{}, ctx *iris.C
 	(*ctx).StatusCode(status)
 }
 
-// ResWithDataStatus create response 200 with specified data converted to json in to the context.
+// ResOKWithData create response 200 with specified data converted to json in to the context.
 // - data [interface] ~ "Object" to be marshalled in to the context.
 // - ctx [*iris.Context] ~ Iris Request context
 func (s SvcResponse) ResOKWithData(data interface{}, ctx *iris.Context) {

@@ -1,6 +1,8 @@
 package db
 
 import (
+	"encoding/base64"
+	"github.com/brianvoe/gofakeit/v6"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
@@ -17,6 +19,8 @@ type RepoDrones interface {
 	Exist(id string) error
 
 	GetDrones() (*[]dto.Drone, error)
+
+	GetMedications() (*[]dto.Medication, error)
 }
 
 type repoDrones struct {
@@ -139,6 +143,8 @@ func (r *repoDrones) Exist(id string) error {
 	return nil
 }
 
+// region ======== Drones ======================================================
+
 func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
 	var drones = []dto.Drone{{
 		SerialNumber:    lib.GenerateUUIDStr(),
@@ -146,49 +152,49 @@ func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
 		WeightLimit:     120,
 		BatteryCapacity: 25,
 		State:           dto.IDLE,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Cruiserweight,
 		WeightLimit:     360,
 		BatteryCapacity: 45,
 		State:           dto.IDLE,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Middleweight,
 		WeightLimit:     240,
 		BatteryCapacity: 56.4,
 		State:           dto.DELIVERED,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Heavyweight,
 		WeightLimit:     420,
 		BatteryCapacity: 99.2,
 		State:           dto.LOADING,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Middleweight,
 		WeightLimit:     250,
 		BatteryCapacity: 35.6,
 		State:           dto.RETURNING,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Heavyweight,
 		WeightLimit:     420,
 		BatteryCapacity: 52.9,
 		State:           dto.DELIVERING,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Lightweight,
 		WeightLimit:     120,
 		BatteryCapacity: 12.9,
 		State:           dto.IDLE,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Cruiserweight,
 		WeightLimit:     345,
 		BatteryCapacity: 91.3,
 		State:           dto.LOADED,
-	},{
+	}, {
 		SerialNumber:    lib.GenerateUUIDStr(),
 		Model:           dto.Heavyweight,
 		WeightLimit:     498,
@@ -198,7 +204,38 @@ func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
 
 	return &drones, nil
 }
-// endregion =============================================================================
+
+// endregion ======== Drones ======================================================
+
+// region ======== Medications ======================================================
+
+func (r *repoDrones) GetMedications() (*[]dto.Medication, error) {
+	var medications = []dto.Medication{{
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 10,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	},{
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 210,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	},{
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 34,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	},{
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 115,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	}}
+
+	return &medications, nil
+}
+
+// endregion ======== Medications ======================================================
 
 // region ======== PRIVATE AUX ===========================================================
 // endregion =============================================================================
