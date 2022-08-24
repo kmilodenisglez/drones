@@ -290,9 +290,31 @@ func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
 // region ======== Medications ======================================================
 
 func (r *repoDrones) GetMedications() (*[]dto.Medication, error) {
-	var medications = fakeMedications()
+	db, err := r.loadDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
 
-	return &medications, nil
+	medication := dto.Medication{}
+	medicationsList := make([]dto.Medication, 0)
+	// custom index: sort medications descending by weight
+	db.CreateIndex("medication_state", "med:*", buntdb.IndexJSON("weight"))
+	err = db.View(func(tx *buntdb.Tx) error {
+		err := tx.Descend("medication_state", func(key, value string) bool {
+			err = jsoniter.UnmarshalFromString(value, &medication)
+			if err == nil {
+				medicationsList = append(medicationsList, medication)
+			}
+			return err == nil
+		})
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &medicationsList, nil
 }
 
 // endregion ======== Medications ======================================================
