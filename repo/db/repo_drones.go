@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 
 	"github.com/brianvoe/gofakeit/v6"
 	jsoniter "github.com/json-iterator/go"
@@ -26,7 +27,7 @@ type RepoDrones interface {
 	GetUsers() (*[]dto.User, error)
 	Exist(id string) error
 
-	GetDrones() (*[]dto.Drone, error)
+	GetDrones(filter string) (*[]dto.Drone, error)
 
 	GetMedications() (*[]dto.Medication, error)
 }
@@ -257,7 +258,9 @@ func (r *repoDrones) Exist(id string) error {
 
 // region ======== Drones ======================================================
 
-func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
+// GetDrones A read-only transaction, return drones in db
+// allows filtering by a specific string field
+func (r *repoDrones) GetDrones(filter string) (*[]dto.Drone, error) {
 	db, err := r.loadDB()
 	if err != nil {
 		return nil, err
@@ -269,6 +272,20 @@ func (r *repoDrones) GetDrones() (*[]dto.Drone, error) {
 	// custom index: sort drones descending by battery capacity
 	db.CreateIndex("drone_state", "drone:*", buntdb.IndexJSON("batteryCapacity"))
 	err = db.View(func(tx *buntdb.Tx) error {
+		if filter != "" {
+			err := tx.Descend("drone_state", func(key, value string) bool {
+				fmt.Println("filter 1: ", filter, value)
+				if strings.Contains(value, filter) {
+					err = jsoniter.UnmarshalFromString(value, &drone)
+					if err == nil {
+						dronesList = append(dronesList, drone)
+					}
+					return err == nil
+				}
+				return true
+			})
+			return err
+		}
 		err := tx.Descend("drone_state", func(key, value string) bool {
 			err = jsoniter.UnmarshalFromString(value, &drone)
 			if err == nil {

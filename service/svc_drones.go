@@ -24,7 +24,7 @@ type ISvcDrones interface {
 
 	// drone functions
 
-	GetDronesSvc() (*[]dto.Drone, *dto.Problem)
+	GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem)
 	GetMedications() (*[]dto.Medication, *dto.Problem)
 }
 
@@ -89,13 +89,17 @@ func (s *svcDronesReqs) GetUsersSvc()  (*[]dto.User, *dto.Problem) {
 	return res, nil
 }
 
-func (s *svcDronesReqs) GetDronesSvc() (*[]dto.Drone, *dto.Problem){
-	res, err := (*s.reposDrones).GetDrones()
+func (s *svcDronesReqs) GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem){
+	var filter = ""
+	if len(filters) > 0 {
+		filter = filters[0]
+	}
+
+	res, err := (*s.reposDrones).GetDrones(filter)
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
 
-	//list := []interface{}{res}
 	return res, nil
 }
 func (s *svcDronesReqs) GetMedications() (*[]dto.Medication, *dto.Problem){

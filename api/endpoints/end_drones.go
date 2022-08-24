@@ -5,6 +5,7 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/hero"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
+	"github.com/kmilodenisglez/drones.restapi/schema"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 	"github.com/kmilodenisglez/drones.restapi/service"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
@@ -54,6 +55,7 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 		guardTxsRouter.Use(*mdwAuthChecker)
 
 		guardTxsRouter.Get("/", h.GetDrones)
+		guardTxsRouter.Get("/{state:int}", h.GetDronesByState)
 
 		// --- DEPENDENCIES ---
 		hero.Register(DepObtainUserDid)
@@ -105,11 +107,48 @@ func (h DronesHandler) PopulateDB(ctx iris.Context) {
 // @Param	Authorization	header	string	true 	"Insert access token" default(Bearer <Add access token here>)
 // @Success 200 {object} []dto.Drone "OK"
 // @Failure 400 {object} dto.Problem "err.processing_param"
-// @Failure 502 {object} dto.Problem "err.bad_gateway"
+// @Failure 500 {object} dto.Problem "err.database_related"
 // @Failure 504 {object} dto.Problem "err.network"
 // @Router /drones [get]
 func (h DronesHandler) GetDrones(ctx iris.Context) {
 	drones, problem := (*h.service).GetDronesSvc()
+	if problem != nil {
+		h.response.ResErr(problem, &ctx)
+		return
+	}
+	h.response.ResOKWithData(drones, &ctx)
+}
+
+type Example struct {
+	// Sort order:
+	// * asc - Ascending, from A to Z.
+	// * desc - Descending, from Z to A.
+	Order string `enums:"asc,desc"`
+}
+
+// GetDronesByState get drones filter by state
+// @Summary Get drones filter by state
+// @description.markdown GetDronesByStateDescription
+// @Tags drones
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Param	Authorization	header	string	true 	"Insert access token" default(Bearer <Add access token here>)
+// @Param   state           path    string  true    "drone state"         Enums(0, 1, 2, 3, 4, 5)
+// @Success 200 {object} []dto.Drone "OK"
+// @Failure 400 {object} dto.Problem "err.processing_param"
+// @Failure 500 {object} dto.Problem "err.database_related"
+// @Failure 504 {object} dto.Problem "err.network"
+// @Router /drones/{state} [get]
+func (h DronesHandler) GetDronesByState(ctx iris.Context) {
+	// checking the state param
+	state := ctx.Params().GetString("state")
+	if state == "" {
+		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: schema.ErrDetInvalidField}, &ctx)
+		return
+	}
+	// we filter by state
+	drones, problem := (*h.service).GetDronesSvc("\"state\":"+state)
 	if problem != nil {
 		h.response.ResErr(problem, &ctx)
 		return
@@ -132,7 +171,7 @@ func (h DronesHandler) GetDrones(ctx iris.Context) {
 // @Param	Authorization	header	string	true 	"Insert access token" default(Bearer <Add access token here>)
 // @Success 200 {object} []dto.Medication "OK"
 // @Failure 400 {object} dto.Problem "err.processing_param"
-// @Failure 502 {object} dto.Problem "err.bad_gateway"
+// @Failure 500 {object} dto.Problem "err.database_related"
 // @Failure 504 {object} dto.Problem "err.network"
 // @Router /medications [get]
 func (h DronesHandler) GetMedications(ctx iris.Context) {

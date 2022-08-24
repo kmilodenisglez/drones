@@ -49,6 +49,6 @@ type Drone struct {
 type Medication struct {
 	Name   string  `json:"name" valid:"customnamevalidation"`
 	Weight float64 `json:"weight"`
-	Code   string  `json:"code" valid:"uppercase,customcodevalidation"`  // we assume that the code is unique
+	Code   string  `json:"code" valid:"uppercase,customcodevalidation"` // we assume that the code is unique
 	Image  string  `json:"image" valid:"base64"`
 }
