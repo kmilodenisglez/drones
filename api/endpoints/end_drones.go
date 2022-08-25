@@ -59,6 +59,8 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 		guardTxsRouter.Get("/", h.GetDrones)
 		guardTxsRouter.Get("/{serialNumber:string}", h.GetADrone)
 		guardTxsRouter.Post("/", h.RegisterADrone)
+		guardTxsRouter.Get("/items/{serialNumber:string}", h.CheckingLoadedMedicationsItems)
+
 
 		// --- DEPENDENCIES ---
 		hero.Register(DepObtainUserDid)
@@ -202,6 +204,37 @@ func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 	h.response.ResOK(&ctx)
 }
 
+// CheckingLoadedMedicationsItems checking loaded medication items for a given drone
+// @Summary Checking loaded medication items for a given drone
+// @description.markdown CheckingLoadedMedicationsItemsDescription
+// @Tags drones
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Param	Authorization	header	string	true 	"Insert access token" default(Bearer <Add access token here>)
+// @Param   serialNumber    path    string  true    "Serial number of a drone"     Format(string)
+// @Success 200 {object} []string "OK"
+// @Failure 400 {object} dto.Problem "err.processing_param"
+// @Failure 500 {object} dto.Problem "err.database_related"
+// @Failure 504 {object} dto.Problem "err.network"
+// @Router /drones/items/{serialNumber} [get]
+func (h DronesHandler) CheckingLoadedMedicationsItems(ctx iris.Context) {
+	// checking the serialNumber param
+	serialNumber := ctx.Params().GetString("serialNumber")
+	if serialNumber == "" {
+		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: schema.ErrDetInvalidField}, &ctx)
+		return
+	}
+
+	medicationsIDs, problem := (*h.service).CheckingLoadedMedicationsItemsSvc(serialNumber)
+	if problem != nil {
+		h.response.ResErr(problem, &ctx)
+		return
+	}
+	h.response.ResOKWithData(medicationsIDs, &ctx)
+}
+
+
 // endregion =============================================================================
 
 // region ======== Medications ======================================================
@@ -220,7 +253,7 @@ func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 // @Failure 504 {object} dto.Problem "err.network"
 // @Router /medications [get]
 func (h DronesHandler) GetMedications(ctx iris.Context) {
-	medications, problem := (*h.service).GetMedications()
+	medications, problem := (*h.service).GetMedicationsSvc()
 	if problem != nil {
 		h.response.ResErr(problem, &ctx)
 		return

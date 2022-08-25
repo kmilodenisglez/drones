@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/kataras/iris/v12"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
 	"github.com/kmilodenisglez/drones.restapi/schema"
@@ -18,7 +20,6 @@ type ISvcDrones interface {
 
 	// user functions
 
-	ExistUserSvc(id string) (bool, *dto.Problem)
 	GetUserSvc(id string, filter bool) (*dto.User, *dto.Problem)
 	GetUsersSvc() (*[]dto.User, *dto.Problem)
 
@@ -27,10 +28,12 @@ type ISvcDrones interface {
 	GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem)
 	GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem)
 	RegisterDroneSvc(drone *dto.Drone) *dto.Problem
+	CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem)
+	ExistDroneSvc(serialNumber string) (bool, *dto.Problem)
 
 	// medication functions
 
-	GetMedications() (*[]dto.Medication, *dto.Problem)
+	GetMedicationsSvc() (*[]dto.Medication, *dto.Problem)
 }
 
 type svcDronesReqs struct {
@@ -64,18 +67,6 @@ func (s *svcDronesReqs) PopulateDBSvc() *dto.Problem {
 		return dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
 	return nil
-}
-
-func (s *svcDronesReqs) ExistUserSvc(id string) (bool, *dto.Problem) {
-	err := (*s.reposDrones).Exist(id)
-	// Getting non-existent values will cause an ErrNotFound error.
-	if err == buntdb.ErrNotFound {
-		return false, dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, err.Error())
-	} else if err != nil {
-		return false, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
-	}
-
-	return true, nil
 }
 
 func (s *svcDronesReqs) GetUserSvc(id string, filter bool) (*dto.User, *dto.Problem) {
@@ -129,7 +120,41 @@ func (s *svcDronesReqs) RegisterDroneSvc(drone *dto.Drone) *dto.Problem {
 	return nil
 }
 
-func (s *svcDronesReqs) GetMedications() (*[]dto.Medication, *dto.Problem) {
+func (s *svcDronesReqs) CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem) {
+	// we check that the drone exists in the database
+	err := (*s.reposDrones).ExistDrone(serialNumber)
+	// Getting non-existent values will cause an ErrNotFound error.
+	if err == buntdb.ErrNotFound {
+		return nil, dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, fmt.Sprintf("the drone with serial number %s does not exist", serialNumber))
+	} else if err != nil {
+		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+
+	// if the drone exists, then we check if it has medication items associated with it
+	res, err := (*s.reposDrones).CheckingLoadedMedicationsItems(serialNumber)
+
+	// Getting non-existent values will cause an ErrNotFound error.
+	// if it throws the ErrNotFound error, it is that the drone is not loading medication items
+	if err == buntdb.ErrNotFound {
+		return &[]string{}, nil
+	} else if err != nil {
+		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+	return res, nil
+}
+
+func (s *svcDronesReqs) ExistDroneSvc(serialNumber string) (bool, *dto.Problem) {
+	err := (*s.reposDrones).ExistDrone(serialNumber)
+	// Getting non-existent values will cause an ErrNotFound error.
+	if err == buntdb.ErrNotFound {
+		return false, nil
+	} else if err != nil {
+		return false, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+	return true, nil
+}
+
+func (s *svcDronesReqs) GetMedicationsSvc() (*[]dto.Medication, *dto.Problem) {
 	res, err := (*s.reposDrones).GetMedications()
 	if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())

@@ -25,11 +25,12 @@ type RepoDrones interface {
 
 	GetUser(field string, filterOptional ...bool) (*dto.User, error)
 	GetUsers() (*[]dto.User, error)
-	Exist(id string) error
 
 	GetDrone(serialNumber string) (*dto.Drone, error)
 	GetDrones(filter string) (*[]dto.Drone, error)
 	RegisterDrone(drone *dto.Drone) error
+	CheckingLoadedMedicationsItems(serialNumber string) (*[]string, error)
+	ExistDrone(serialNumber string) error
 
 	GetMedications() (*[]dto.Medication, error)
 }
@@ -235,29 +236,6 @@ func (r *repoDrones) GetUsers() (*[]dto.User, error) {
 	return &list, nil
 }
 
-func (r *repoDrones) Exist(id string) error {
-	// Open the data.db file. It will be created if it doesn't exist.
-	db, err := buntdb.Open(r.DBUserLocation)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	err = db.View(func(tx *buntdb.Tx) error {
-		_, err := tx.Get(id)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	// Getting non-existent values will cause an ErrNotFound error.
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // region ======== Drones ======================================================
 
 // GetDrone get a specific drone
@@ -359,6 +337,57 @@ func (r *repoDrones) RegisterDrone(drone *dto.Drone) error {
 	return  nil
 }
 
+// CheckingLoadedMedicationsItems checking loaded medication items for a given drone
+func (r *repoDrones) CheckingLoadedMedicationsItems(serialNumber string) (*[]string, error) {
+	db, err := r.loadDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	// medications id slice loaded by the drone
+	loadedMeds := make([]string, 0)
+
+	db.CreateIndex("loaded_medications", "loaded_medications:*", buntdb.IndexString)
+	err = db.View(func(tx *buntdb.Tx) error {
+		value, err := tx.Get("loaded_medications:"+serialNumber)
+		if err != nil{
+			return err
+		}
+		err = jsoniter.UnmarshalFromString(value, &loadedMeds)
+		if err != nil{
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &loadedMeds, nil
+}
+
+func (r *repoDrones) ExistDrone(serialNumber string) error {
+	db, err := r.loadDB()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	err = db.View(func(tx *buntdb.Tx) error {
+		_, err := tx.Get("drone:"+serialNumber)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	// Getting non-existent values will cause an ErrNotFound error.
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // endregion ======== Drones ======================================================
 
 // region ======== Medications ======================================================
@@ -390,6 +419,7 @@ func (r *repoDrones) GetMedications() (*[]dto.Medication, error) {
 
 	return &medicationsList, nil
 }
+
 
 // endregion ======== Medications ======================================================
 
