@@ -176,8 +176,8 @@ func (h DronesHandler) GetADrone(ctx iris.Context) {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
-// @Param	Authorization	header	string 			true 	"Insert access token" default(Bearer <Add access token here>)
-// @Param	drone			body	dto.Drone		true	"Drone data"
+// @Param	Authorization	header	string 			    true 	"Insert access token" default(Bearer <Add access token here>)
+// @Param	drone			body	dto.RequestDrone	true	"Drone data"
 // @Success 204 "OK"
 // @Failure 401 {object} dto.Problem "err.unauthorized"
 // @Failure 400 {object} dto.Problem "err.processing_param"
@@ -192,6 +192,9 @@ func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: err.Error()}, &ctx)
 		return
 	}
+
+	drone.WeightLimit = lib.CalculateDroneWeightLimit(drone)
+	fmt.Println(drone)
 
 	// validate drone fields
 	_, err := govalidator.ValidateStruct(drone)

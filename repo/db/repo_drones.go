@@ -376,6 +376,7 @@ func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicat
 	// begin: validating medication item IDs
 	medication := dto.Medication{}
 	medicationIdsRealMap := make(map[string]string)
+	var packedTotalWeight = 0.0
 
 	db.CreateIndex("medication_id", "med:*", buntdb.IndexJSON("weight"))
 	err = db.View(func(tx *buntdb.Tx) error {
@@ -383,6 +384,7 @@ func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicat
 			err = jsoniter.UnmarshalFromString(value, &medication)
 			if err == nil {
 				medicationIdsRealMap[medication.Code] = ""
+				packedTotalWeight += medication.Weight
 			}
 			return err == nil
 		})
@@ -390,6 +392,10 @@ func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicat
 	})
 	if err != nil {
 		return err
+	}
+
+	if !lib.ValidatePackedTotalWeightMedicationItems(packedTotalWeight) {
+		return fmt.Errorf("maximum load weight exceeded")
 	}
 
 	// to guarantee non-repeated id

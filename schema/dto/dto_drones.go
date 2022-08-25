@@ -39,16 +39,25 @@ type ConfigDB struct {
 	IsPopulated bool `json:"isPopulated"`
 }
 
+// RequestDrone model
+// @Description drone model without the weightLimit, it is used for endpoint request
+// @Description the weight limit is calculated from the drone's model (Lightweight, Middleweight, Cruiserweight, Heavyweight)
+type RequestDrone struct {
+	SerialNumber    string     `json:"serialNumber" valid:"maxstringlength(100)"`
+	Model           DroneModel `json:"model" valid:"drone_enum_validation~unknown drone model"`
+	BatteryCapacity float64    `json:"batteryCapacity" valid:"range(0|100)"`
+	State           DroneState `json:"state" valid:"drone_enum_validation~unknown drone state"`
+}
+
 // Drone model
 // @Description Drone item information
 type Drone struct {
 	SerialNumber    string     `json:"serialNumber" valid:"maxstringlength(100)"`
 	Model           DroneModel `json:"model" valid:"drone_enum_validation~unknown drone model"`
-	WeightLimit     int        `json:"weightLimit" valid:"required~the weight limit is between 1 and 500 gr,range(1|500)~the weight limit is between 1 and 500 gr"`
+	WeightLimit     float64    `json:"weightLimit" valid:"required~the weight limit is between 1 and 500 gr,range(1|500)~the weight limit is between 1 and 500 gr"`
 	BatteryCapacity float64    `json:"batteryCapacity" valid:"range(0|100)"`
 	State           DroneState `json:"state" valid:"drone_enum_validation~unknown drone state"`
 }
-
 
 // Medication model
 // @Description Medication item information
@@ -62,5 +71,6 @@ type Medication struct {
 const (
 	RegexpMedicationName  = "^[a-zA-Z0-9_-]*$" // allowed only letters, numbers, ‘-‘, ‘_’
 	RegexpMedicationCode  = "^[A-Z0-9_]*$"     // allowed only upper case letters, underscore and numbers
-	MaxSerialNumberLength = "100"                // serial number (100 characters max)
+	MaxSerialNumberLength = "100"              // serial number (100 characters max)
+	WeightLimitDrone      = 500                // weight limit (500gr max)
 )

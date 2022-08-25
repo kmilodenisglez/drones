@@ -46,3 +46,20 @@ func InitValidator() {
 func ValidateSerialNumberDrone(serialNumber string) bool {
 	return govalidator.MaxStringLength(serialNumber, dto.MaxSerialNumberLength)
 }
+
+func ValidatePackedTotalWeightMedicationItems(value float64) bool {
+	return govalidator.InRangeFloat64(value, 1, dto.WeightLimitDrone)
+}
+
+func CalculateDroneWeightLimit(drone *dto.Drone) float64 {
+	switch drone.Model {
+	case dto.Lightweight:
+		return dto.WeightLimitDrone / 4
+	case dto.Middleweight:
+		return dto.WeightLimitDrone / 3
+	case dto.Cruiserweight:
+		return dto.WeightLimitDrone / 2
+	}
+
+	return dto.WeightLimitDrone
+}
