@@ -187,7 +187,7 @@ func (h DronesHandler) GetADrone(ctx iris.Context) {
 func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 	drone := new(dto.Drone)
 
-	// unmarshalling the json and check
+	// unmarshalling the JSON from request's body and check
 	if err := ctx.ReadJSON(drone); err != nil {
 		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: err.Error()}, &ctx)
 		return
@@ -300,7 +300,7 @@ func (h DronesHandler) LoadMedicationItems(ctx iris.Context) {
 	}
 
 	medicationItemIDs := make([]interface{}, 0)
-	// unmarshalling the json and check
+	// unmarshalling the JSON from request's body and check
 	if err := ctx.ReadJSON(&medicationItemIDs); err != nil {
 		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: err.Error()}, &ctx)
 		return

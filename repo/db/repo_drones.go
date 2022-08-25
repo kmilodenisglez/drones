@@ -284,7 +284,6 @@ func (r *repoDrones) GetDrones(filter string) (*[]dto.Drone, error) {
 	err = db.View(func(tx *buntdb.Tx) error {
 		if filter != "" {
 			err := tx.Descend("drone_state", func(key, value string) bool {
-				fmt.Println("filter 1: ", filter, value)
 				if strings.Contains(value, filter) {
 					err = jsoniter.UnmarshalFromString(value, &drone)
 					if err == nil {
@@ -373,6 +372,35 @@ func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicat
 		return err
 	}
 	defer db.Close()
+
+	// begin: validating medication item IDs
+	medication := dto.Medication{}
+	medicationIdsRealMap := make(map[string]string)
+
+	db.CreateIndex("medication_id", "med:*", buntdb.IndexJSON("weight"))
+	err = db.View(func(tx *buntdb.Tx) error {
+		err := tx.Descend("medication_id", func(key, value string) bool {
+			err = jsoniter.UnmarshalFromString(value, &medication)
+			if err == nil {
+				medicationIdsRealMap[medication.Code] = ""
+			}
+			return err == nil
+		})
+		return err
+	})
+	if err != nil {
+		return err
+	}
+
+	// to guarantee non-repeated id
+	medicationItemIDs = lib.Unique(medicationItemIDs)
+
+	// compares the request IDs (medicationItemIDs) with the collection obtained from the database (medicationIdsRealMap)
+	allIDValid := lib.ThereAreAll(medicationIdsRealMap, medicationItemIDs)
+	if !allIDValid {
+		return fmt.Errorf("at least one of the medication items does not exist")
+	}
+	// end: validating medication item IDs
 
 	log.Printf("loading a drone '%s' with medication items: %s", serialNumberDrone, medicationItemIDs)
 	err = db.Update(func(tx *buntdb.Tx) error {

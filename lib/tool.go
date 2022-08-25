@@ -34,7 +34,7 @@ func SliceToMap(slice []string, dMap map[string]string) {
 func MapToSlice(dMap map[string]string) []string {
 	// Convert map to slice of keys.
 	slice := make([]string, 0)
-	for key:= range dMap {
+	for key := range dMap {
 		slice = append(slice, key)
 	}
 	return slice
@@ -137,6 +137,19 @@ func NormalizeString(text string, upper bool) string {
 	return result
 }
 
+func Unique(input []interface{}) []interface{} {
+	u := make([]interface{}, 0, len(input))
+	m := make(map[string]bool)
+
+	for _, val := range input {
+		if _, ok := m[val.(string)]; !ok {
+			m[val.(string)] = true
+			u = append(u, val)
+		}
+	}
+
+	return u
+}
 func UniqueStrings(input []string) []string {
 	u := make([]string, 0, len(input))
 	m := make(map[string]bool)
@@ -149,4 +162,16 @@ func UniqueStrings(input []string) []string {
 	}
 
 	return u
+}
+
+
+
+func ThereAreAll(royalSource map[string]string, data []interface{}) bool {
+	for _, v := range data {
+		_, exists := royalSource[v.(string)]
+		if !exists {
+			return false
+		}
+	}
+	return true
 }
