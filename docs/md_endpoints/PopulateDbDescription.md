@@ -44,27 +44,29 @@ State enum for a Drone:
 5 => RETURNING
 ```
 
+generated drone collection:
 ```json
 [
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174001","model":2,"weightLimit":360,"batteryCapacity":45,"state":0},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174002","model":1,"weightLimit":240,"batteryCapacity":56.4,"state":4},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174003","model":3,"weightLimit":420,"batteryCapacity":99.2,"state":1},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174004","model":1,"weightLimit":250,"batteryCapacity":35.6,"state":5},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174005","model":3,"weightLimit":420,"batteryCapacity":52.9,"state":3},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174006","model":0,"weightLimit":120,"batteryCapacity":12.9,"state":0},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174007","model":2,"weightLimit":345,"batteryCapacity":91.3,"state":2},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174008","model":3,"weightLimit":498,"batteryCapacity":73.6,"state":2},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174009","model":0,"weightLimit":120,"batteryCapacity":25,"state":0},
-  {"serialNumber":"123e4567-e89b-12d3-a456-426614174010","model":0,"weightLimit":120,"batteryCapacity":25,"state":0}
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174001","model":2,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174002","model":1,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174003","model":3,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174004","model":1,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174005","model":3,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174006","model":0,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174007","model":2,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174008","model":3,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174009","model":0,...},
+  {"serialNumber":"123e4567-e89b-12d3-a456-426614174010","model":0,...}
 ]
 ```
 
-four medications:
+seven (7) medications:
 ```json
 [
   {"name":"a random string","weight":115,"code":"a random code","image":"ZmFrZV9pbWFnZQ=="}, 
   {"name":"a random string","weight":10,"code":"a random code","image":"ZmFrZV9pbWFnZQ=="},
   {"name":"a random string","weight":210,"code":"a random code","image":"ZmFrZV9pbWFnZQ=="},
   {"name":"a random string","weight":34,"code":"a random code","image":"ZmFrZV9pbWFnZQ=="}
+  ...
 ]
 ```

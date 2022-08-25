@@ -51,8 +51,8 @@ func ValidatePackedTotalWeightMedicationItems(value float64) bool {
 	return govalidator.InRangeFloat64(value, 1, dto.WeightLimitDrone)
 }
 
-func CalculateDroneWeightLimit(drone *dto.Drone) float64 {
-	switch drone.Model {
+func CalculateDroneWeightLimit(model dto.DroneModel) float64 {
+	switch model {
 	case dto.Lightweight:
 		return dto.WeightLimitDrone / 4
 	case dto.Middleweight:

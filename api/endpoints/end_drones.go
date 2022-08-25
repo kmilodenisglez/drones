@@ -193,8 +193,8 @@ func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 		return
 	}
 
-	drone.WeightLimit = lib.CalculateDroneWeightLimit(drone)
-	fmt.Println(drone)
+	// calculate drone weight limit
+	drone.WeightLimit = lib.CalculateDroneWeightLimit(drone.Model)
 
 	// validate drone fields
 	_, err := govalidator.ValidateStruct(drone)

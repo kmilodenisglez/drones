@@ -71,14 +71,14 @@ func (r *repoDrones) PopulateDB() error {
 	// If it is already populated, the execution of the function stops
 	if isPopulated(db) {return errors.New(schema.ErrBuntdbPopulated)}
 
-	var fakeUsers = fakeUsers()
-	var fakeDrones = fakeDrones()
-	var fakeMedications = fakeMedications()
+	var fakeUsersList = fakeUsers()
+	var fakeDronesList = fakeDrones()
+	var fakeMedicationsList = fakeMedications()
 
 	log.Println("writing users in database")
 	err = db.Update(func(tx *buntdb.Tx) error {
-		for i := 0; i < len(fakeUsers); i++ {
-			res, err := jsoniter.MarshalToString(fakeUsers[i])
+		for i := 0; i < len(fakeUsersList); i++ {
+			res, err := jsoniter.MarshalToString(fakeUsersList[i])
 			log.Printf("user #%d: %s", i, res)
 			if err != nil {
 				return err
@@ -97,13 +97,13 @@ func (r *repoDrones) PopulateDB() error {
 
 	log.Println("writing drones in database")
 	err = db.Update(func(tx *buntdb.Tx) error {
-		for i := 0; i < len(fakeDrones); i++ {
-			res, err := jsoniter.MarshalToString(fakeDrones[i])
+		for i := 0; i < len(fakeDronesList); i++ {
+			res, err := jsoniter.MarshalToString(fakeDronesList[i])
 			if err != nil {
 				return err
 			}
 			// add drone value with "serialnumber" key
-			_, _, err = tx.Set("drone:"+fakeDrones[i].SerialNumber, res, nil)
+			_, _, err = tx.Set("drone:"+fakeDronesList[i].SerialNumber, res, nil)
 			if err != nil {
 				return err
 			}
@@ -117,13 +117,13 @@ func (r *repoDrones) PopulateDB() error {
 
 	log.Println("writing medications in database")
 	err = db.Update(func(tx *buntdb.Tx) error {
-		for i := 0; i < len(fakeMedications); i++ {
-			res, err := jsoniter.MarshalToString(fakeMedications[i])
+		for i := 0; i < len(fakeMedicationsList); i++ {
+			res, err := jsoniter.MarshalToString(fakeMedicationsList[i])
 			if err != nil {
 				return err
 			}
 			// add drone value with "code" key
-			_, _, err = tx.Set("med:"+fakeMedications[i].Code, res, nil)
+			_, _, err = tx.Set("med:"+fakeMedicationsList[i].Code, res, nil)
 			if err != nil {
 				return err
 			}
@@ -541,61 +541,61 @@ func fakeDrones() []dto.Drone {
 	var drones = []dto.Drone{{
 		SerialNumber:    uuid+"01",
 		Model:           dto.Cruiserweight,
-		WeightLimit:     360,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Cruiserweight),
 		BatteryCapacity: 45,
 		State:           dto.IDLE,
 	}, {
 		SerialNumber:    uuid+"02",
 		Model:           dto.Middleweight,
-		WeightLimit:     240,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Middleweight),
 		BatteryCapacity: 56.4,
 		State:           dto.DELIVERED,
 	}, {
 		SerialNumber:    uuid+"03",
 		Model:           dto.Heavyweight,
-		WeightLimit:     420,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Heavyweight),
 		BatteryCapacity: 99.2,
 		State:           dto.LOADING,
 	}, {
 		SerialNumber:    uuid+"04",
 		Model:           dto.Middleweight,
-		WeightLimit:     250,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Middleweight),
 		BatteryCapacity: 35.6,
 		State:           dto.RETURNING,
 	}, {
 		SerialNumber:    uuid+"05",
 		Model:           dto.Heavyweight,
-		WeightLimit:     420,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Heavyweight),
 		BatteryCapacity: 52.9,
 		State:           dto.DELIVERING,
 	}, {
 		SerialNumber:    uuid+"06",
 		Model:           dto.Lightweight,
-		WeightLimit:     120,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Lightweight),
 		BatteryCapacity: 12.9,
 		State:           dto.IDLE,
 	}, {
 		SerialNumber:    uuid+"07",
 		Model:           dto.Cruiserweight,
-		WeightLimit:     345,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Cruiserweight),
 		BatteryCapacity: 91.3,
 		State:           dto.LOADED,
 	}, {
 		SerialNumber:    uuid+"08",
 		Model:           dto.Heavyweight,
-		WeightLimit:     498,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Heavyweight),
 		BatteryCapacity: 73.6,
 		State:           dto.LOADED,
 	},{
 		SerialNumber:    uuid+"09",
 		Model:           dto.Lightweight,
-		WeightLimit:     120,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Lightweight),
 		BatteryCapacity: 25,
 		State:           dto.IDLE,
 	},{
 		SerialNumber:    uuid+"10",
 		Model:           dto.Lightweight,
-		WeightLimit:     120,
+		WeightLimit:     lib.CalculateDroneWeightLimit(dto.Lightweight),
 		BatteryCapacity: 25,
 		State:           dto.IDLE,
 	}}
@@ -605,7 +605,7 @@ func fakeDrones() []dto.Drone {
 func fakeMedications() []dto.Medication {
 	var medications = []dto.Medication{{
 		Name:   gofakeit.Password(true, true, true, false, false, 12),
-		Weight: 10,
+		Weight: 700,
 		Code:   gofakeit.Password(false, true, true, false, false, 10),
 		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
 	}, {
@@ -621,6 +621,21 @@ func fakeMedications() []dto.Medication {
 	}, {
 		Name:   lib.NormalizeString(gofakeit.Company(), true),
 		Weight: 115,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	}, {
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 490,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	}, {
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 226,
+		Code:   gofakeit.Password(false, true, true, false, false, 10),
+		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
+	}, {
+		Name:   lib.NormalizeString(gofakeit.Company(), true),
+		Weight: 397,
 		Code:   gofakeit.Password(false, true, true, false, false, 10),
 		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
 	}}
