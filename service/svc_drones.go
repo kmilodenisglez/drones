@@ -33,7 +33,7 @@ type ISvcDrones interface {
 	// medication functions
 
 	GetMedicationsSvc() (*[]dto.Medication, *dto.Problem)
-	CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem)
+	CheckingLoadedMedicationsItemsSvc(serialNumberDrone string) (*[]string, *dto.Problem)
 	LoadMedicationItemsADroneSvc(serialNumberDrone string, medicationItemIDs []interface{}) *dto.Problem
 }
 
@@ -140,18 +140,18 @@ func (s *svcDronesReqs) GetMedicationsSvc() (*[]dto.Medication, *dto.Problem) {
 	return res, nil
 }
 
-func (s *svcDronesReqs) CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem) {
-	// we check that the drone exists in the database
-	err := (*s.reposDrones).ExistDrone(serialNumber)
+func (s *svcDronesReqs) CheckingLoadedMedicationsItemsSvc(serialNumberDrone string) (*[]string, *dto.Problem) {
+	// check that the drone exists in the database
+	err := (*s.reposDrones).ExistDrone(serialNumberDrone)
 	// Getting non-existent values will cause an ErrNotFound error.
 	if err == buntdb.ErrNotFound {
-		return nil, dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, fmt.Sprintf("the drone with serial number %s does not exist", serialNumber))
+		return nil, dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrBuntdbItemNotFound, fmt.Sprintf("the drone with serial number %s does not exist", serialNumberDrone))
 	} else if err != nil {
 		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
 
 	// if the drone exists, then we check if it has medication items associated with it
-	res, err := (*s.reposDrones).CheckingLoadedMedicationsItems(serialNumber)
+	res, err := (*s.reposDrones).CheckingLoadedMedicationsItems(serialNumberDrone)
 
 	// Getting non-existent values will cause an ErrNotFound error.
 	// if it throws the ErrNotFound error, it is that the drone is not loading medication items
@@ -164,8 +164,16 @@ func (s *svcDronesReqs) CheckingLoadedMedicationsItemsSvc(serialNumber string) (
 }
 
 func (s *svcDronesReqs) LoadMedicationItemsADroneSvc(serialNumberDrone string, medicationItemIDs []interface{}) *dto.Problem {
-	err := (*s.reposDrones).LoadMedicationItemsADrone(serialNumberDrone, medicationItemIDs)
-	if err != nil {
+	// get drone if exist
+	drone, errP := s.GetADroneSvc(serialNumberDrone)
+	if errP != nil {
+		return errP
+	}
+
+	err := (*s.reposDrones).LoadMedicationItemsADrone(drone, medicationItemIDs)
+	if err == buntdb.ErrNotFound {
+		return dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrDroneMaximumLoadWeightExceededKey, err.Error())
+	} else if err != nil {
 		return dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
 	return nil

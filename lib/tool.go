@@ -163,15 +163,3 @@ func UniqueStrings(input []string) []string {
 
 	return u
 }
-
-
-
-func ThereAreAll(royalSource map[string]string, data []interface{}) bool {
-	for _, v := range data {
-		_, exists := royalSource[v.(string)]
-		if !exists {
-			return false
-		}
-	}
-	return true
-}

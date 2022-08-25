@@ -30,7 +30,7 @@ type RepoDrones interface {
 	GetDrones(filter string) (*[]dto.Drone, error)
 	RegisterDrone(drone *dto.Drone) error
 	CheckingLoadedMedicationsItems(serialNumber string) (*[]string, error)
-	LoadMedicationItemsADrone(serialNumberDrone string, medicationItemIDs []interface{}) error
+	LoadMedicationItemsADrone(drone *dto.Drone, medicationItemIDs []interface{}) error
 	ExistDrone(serialNumber string) error
 
 	GetMedications() (*[]dto.Medication, error)
@@ -366,7 +366,7 @@ func (r *repoDrones) CheckingLoadedMedicationsItems(serialNumber string) (*[]str
 	return &loadedMeds, nil
 }
 
-func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicationItemIDs []interface{}) error {
+func (r *repoDrones) LoadMedicationItemsADrone(drone *dto.Drone, medicationItemIDs []interface{}) error {
 	db, err := r.loadDB()
 	if err != nil {
 		return err
@@ -375,16 +375,14 @@ func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicat
 
 	// begin: validating medication item IDs
 	medication := dto.Medication{}
-	medicationIdsRealMap := make(map[string]string)
-	var packedTotalWeight = 0.0
+	medicationIdsRealMap := make(map[string]float64)
 
 	db.CreateIndex("medication_id", "med:*", buntdb.IndexJSON("weight"))
 	err = db.View(func(tx *buntdb.Tx) error {
 		err := tx.Descend("medication_id", func(key, value string) bool {
 			err = jsoniter.UnmarshalFromString(value, &medication)
 			if err == nil {
-				medicationIdsRealMap[medication.Code] = ""
-				packedTotalWeight += medication.Weight
+				medicationIdsRealMap[medication.Code] = medication.Weight
 			}
 			return err == nil
 		})
@@ -394,27 +392,30 @@ func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicat
 		return err
 	}
 
-	if !lib.ValidatePackedTotalWeightMedicationItems(packedTotalWeight) {
-		return fmt.Errorf("maximum load weight exceeded")
-	}
-
 	// to guarantee non-repeated id
 	medicationItemIDs = lib.Unique(medicationItemIDs)
 
 	// compares the request IDs (medicationItemIDs) with the collection obtained from the database (medicationIdsRealMap)
-	allIDValid := lib.ThereAreAll(medicationIdsRealMap, medicationItemIDs)
+	// also returns the total weight
+	packedTotalWeight, allIDValid := thereAreAll(medicationIdsRealMap, medicationItemIDs)
 	if !allIDValid {
 		return fmt.Errorf("at least one of the medication items does not exist")
 	}
+
+	// prevent the drone from being loaded with more weight that it can carry
+	if packedTotalWeight > drone.WeightLimit {
+		return schema.ErrDroneMaximumLoadWeightExceeded
+	}
+
 	// end: validating medication item IDs
 
-	log.Printf("loading a drone '%s' with medication items: %s", serialNumberDrone, medicationItemIDs)
+	log.Printf("loading a drone '%s' with medication items: %s", drone.SerialNumber, medicationItemIDs)
 	err = db.Update(func(tx *buntdb.Tx) error {
 		res, err := jsoniter.MarshalToString(medicationItemIDs)
 		if err != nil {
 			return err
 		}
-		_, _, err = tx.Set("loaded_medications:"+serialNumberDrone, res, nil)
+		_, _, err = tx.Set("loaded_medications:"+drone.SerialNumber, res, nil)
 		if err != nil {
 			return err
 		}
@@ -640,6 +641,22 @@ func fakeMedications() []dto.Medication {
 		Image:  base64.StdEncoding.EncodeToString([]byte("fake_image")),
 	}}
 	return medications
+}
+
+// thereAreAll compares the request IDs (medicationItemIDs) with the collection
+// obtained from the database (medicationIdsRealMap)
+// if they all exist then it also returns the total weight
+func thereAreAll(medicationIdsRealMap map[string]float64, medicationItemIDs []interface{}) (float64, bool) {
+	var totalWeight = 0.0
+	for _, v := range medicationItemIDs {
+		_, exists := medicationIdsRealMap[v.(string)]
+		if !exists {
+			return 0.0, false
+		} else {
+			totalWeight += medicationIdsRealMap[v.(string)]
+		}
+	}
+	return totalWeight, true
 }
 
 // endregion =============================================================================

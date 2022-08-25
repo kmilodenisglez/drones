@@ -47,10 +47,6 @@ func ValidateSerialNumberDrone(serialNumber string) bool {
 	return govalidator.MaxStringLength(serialNumber, dto.MaxSerialNumberLength)
 }
 
-func ValidatePackedTotalWeightMedicationItems(value float64) bool {
-	return govalidator.InRangeFloat64(value, 1, dto.WeightLimitDrone)
-}
-
 func CalculateDroneWeightLimit(model dto.DroneModel) float64 {
 	switch model {
 	case dto.Lightweight:

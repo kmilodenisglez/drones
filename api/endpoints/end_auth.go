@@ -36,39 +36,42 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 	h.providers["drones"] = true
 
 	repoDrones := db.NewRepoDrones(svcC)
-	svcAuth := auth.NewSvcAuthentication(h.providers,&repoDrones)      // instantiating authentication Service
+	svcAuth := auth.NewSvcAuthentication(h.providers, &repoDrones) // instantiating authentication Service
 	svcDrones := service.NewSvcDronesReqs(&repoDrones)
 
-	// registering unprotected router
-	authRouter := app.Party("/auth") // authorize
+	// Simple group: v1
+	v1 := app.Party("/v1")
 	{
-		// --- GROUP / PARTY MIDDLEWARES ---
+		// registering unprotected router
+		authRouter := v1.Party("/auth") // authorize
+		{
+			// --- GROUP / PARTY MIDDLEWARES ---
 
-		// --- DEPENDENCIES ---
-		hero.Register(depObtainUserCred)
-		hero.Register(svcAuth) // as an alternative, we can put these dependencies as property in the struct HAuth, as we are doing in the rest of the endpoints / handlers
-		hero.Register(svcDrones)
+			// --- DEPENDENCIES ---
+			hero.Register(depObtainUserCred)
+			hero.Register(svcAuth) // as an alternative, we can put these dependencies as property in the struct HAuth, as we are doing in the rest of the endpoints / handlers
+			hero.Register(svcDrones)
 
-		// --- REGISTERING ENDPOINTS ---
-		// authRouter.Post("/<provider>")	// provider is the auth provider to be used.
-		authRouter.Post("/", hero.Handler(h.authIntent)) // using a provider named 'sisec', also injecting dependencies
+			// --- REGISTERING ENDPOINTS ---
+			// authRouter.Post("/<provider>")	// provider is the auth provider to be used.
+			authRouter.Post("/", hero.Handler(h.authIntent)) // using a provider named 'sisec', also injecting dependencies
+		}
+
+		// registering protected router
+		guardAuthRouter := v1.Party("/auth")
+		{
+			// --- GROUP / PARTY MIDDLEWARES ---
+			guardAuthRouter.Use(*mdwAuthChecker) // registering access token checker middleware
+
+			// --- DEPENDENCIES ---
+			hero.Register(DepObtainUserDid)
+			hero.Register(repoDrones)
+
+			// --- REGISTERING ENDPOINTS ---
+			guardAuthRouter.Get("/logout", h.logout)
+			guardAuthRouter.Get("/user", hero.Handler(h.userGet))
+		}
 	}
-
-	// registering protected router
-	guardAuthRouter := app.Party("/auth")
-	{
-		// --- GROUP / PARTY MIDDLEWARES ---
-		guardAuthRouter.Use(*mdwAuthChecker) // registering access token checker middleware
-
-		// --- DEPENDENCIES ---
-		hero.Register(DepObtainUserDid)
-		hero.Register(repoDrones)
-
-		// --- REGISTERING ENDPOINTS ---
-		guardAuthRouter.Get("/logout", h.logout)
-		guardAuthRouter.Get("/user", hero.Handler(h.userGet))
-	}
-
 	return h
 }
 
