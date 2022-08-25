@@ -1,0 +1,1 @@
+Load a drone with medication items

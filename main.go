@@ -2,9 +2,6 @@ package main
 
 import (
 	"fmt"
-	"regexp"
-
-	"github.com/asaskevich/govalidator"
 	"github.com/go-playground/validator/v10"
 	"github.com/iris-contrib/swagger/v12"              // swagger middleware for Iris
 	"github.com/iris-contrib/swagger/v12/swaggerFiles" // swagger embed files
@@ -13,6 +10,7 @@ import (
 	"github.com/kmilodenisglez/drones.restapi/api/endpoints"
 	"github.com/kmilodenisglez/drones.restapi/api/middlewares"
 	_ "github.com/kmilodenisglez/drones.restapi/docs"
+	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
 
 	_ "github.com/lib/pq"
@@ -67,7 +65,7 @@ func main() {
 	}
 
 	// activate govalidator package and adding new validators
-	initValidator()
+	lib.InitValidator()
 
 	// built-ins
 	app.Use(logger.New())
@@ -103,23 +101,3 @@ func main() {
 	app.Run(iris.Addr(addr))
 }
 
-// Activate behavior to require all fields and adding new validators
-func initValidator() {
-	govalidator.SetFieldsRequiredByDefault(false)
-
-	// Add your own struct validation tags
-	// validates medication name
-	govalidator.TagMap["medication_name_validation"] = func(str string) bool {
-		return regexp.MustCompile("^[a-zA-Z0-9_-]*$").MatchString(str)
-	}
-
-	// validates medication code
-	govalidator.TagMap["medication_code_validation"] = func(str string) bool {
-		return regexp.MustCompile("^[A-Z0-9_]*$").MatchString(str)
-	}
-
-	// validates that an enum is within the interval
-	govalidator.TagMap["drone_enum_validation"] = func(str string) bool {
-		return str != "unknown"
-	}
-}

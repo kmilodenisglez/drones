@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/hero"
+	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
 	"github.com/kmilodenisglez/drones.restapi/schema"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
@@ -59,7 +60,8 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 		guardTxsRouter.Get("/", h.GetDrones)
 		guardTxsRouter.Get("/{serialNumber:string}", h.GetADrone)
 		guardTxsRouter.Post("/", h.RegisterADrone)
-		guardTxsRouter.Get("/items/{serialNumber:string}", h.CheckingLoadedMedicationsItems)
+		guardTxsRouter.Get("/items/{serialNumber:string}", h.CheckingLoadedMedicationItems)
+		guardTxsRouter.Post("/items/{serialNumber:string}", h.LoadMedicationItems)
 
 
 		// --- DEPENDENCIES ---
@@ -173,7 +175,7 @@ func (h DronesHandler) GetADrone(ctx iris.Context) {
 // @Accept  json
 // @Produce json
 // @Param	Authorization	header	string 			true 	"Insert access token" default(Bearer <Add access token here>)
-// @Param	tx				body	dto.Drone		true	"Drone data"
+// @Param	drone			body	dto.Drone		true	"Drone data"
 // @Success 204 "OK"
 // @Failure 401 {object} dto.Problem "err.unauthorized"
 // @Failure 400 {object} dto.Problem "err.processing_param"
@@ -204,7 +206,7 @@ func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 	h.response.ResOK(&ctx)
 }
 
-// CheckingLoadedMedicationsItems checking loaded medication items for a given drone
+// CheckingLoadedMedicationItems checking loaded medication items for a given drone
 // @Summary Checking loaded medication items for a given drone
 // @description.markdown CheckingLoadedMedicationsItemsDescription
 // @Tags drones
@@ -218,7 +220,7 @@ func (h DronesHandler) RegisterADrone(ctx iris.Context) {
 // @Failure 500 {object} dto.Problem "err.database_related"
 // @Failure 504 {object} dto.Problem "err.network"
 // @Router /drones/items/{serialNumber} [get]
-func (h DronesHandler) CheckingLoadedMedicationsItems(ctx iris.Context) {
+func (h DronesHandler) CheckingLoadedMedicationItems(ctx iris.Context) {
 	// checking the serialNumber param
 	serialNumber := ctx.Params().GetString("serialNumber")
 	if serialNumber == "" {
@@ -232,6 +234,46 @@ func (h DronesHandler) CheckingLoadedMedicationsItems(ctx iris.Context) {
 		return
 	}
 	h.response.ResOKWithData(medicationsIDs, &ctx)
+}
+
+
+// LoadMedicationItems load a drone with medication items
+// @Summary Load a drone with medication items
+// @description.markdown LoadMedicationItemsDescription
+// @Tags drones
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json
+// @Param	Authorization	header	string 			true 	"Insert access token" default(Bearer <Add access token here>)
+// @Param	MedicationIds	body	[]string		true	"Medication item ids collection"
+// @Success 204 "OK"
+// @Failure 401 {object} dto.Problem "err.unauthorized"
+// @Failure 400 {object} dto.Problem "err.processing_param"
+// @Failure 500 {object} dto.Problem "err.database_related"
+// @Failure 504 {object} dto.Problem "err.network"
+// @Router /drones/items/{serialNumber} [post]
+func (h DronesHandler) LoadMedicationItems(ctx iris.Context) {
+	medicationItemIDs := make([]interface{}, 0)
+
+	// unmarshalling the json and check
+	if err := ctx.ReadJSON(&medicationItemIDs); err != nil {
+		h.response.ResErr(&dto.Problem{Status: iris.StatusBadRequest, Title: schema.ErrProcParam, Detail: err.Error()}, &ctx)
+		return
+	}
+
+	// if false, then there is at least one invalid medication item id
+	isValid := lib.ValidateMedicationCodeArray(medicationItemIDs, dto.RegexpMedicationCode)
+	if !isValid {
+		h.response.ResErr(&dto.Problem{Status: iris.StatusInternalServerError, Title: schema.ErrValidationField, Detail: "there is at least one invalid medication item ID"}, &ctx)
+		return
+	}
+
+	//problem := (*h.service).RegisterDroneSvc(drone)
+	//if problem != nil {
+	//	h.response.ResErr(problem, &ctx)
+	//	return
+	//}
+	h.response.ResOK(&ctx)
 }
 
 

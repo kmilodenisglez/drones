@@ -53,3 +53,8 @@ type Medication struct {
 	Code   string  `json:"code" valid:"medication_code_validation~invalid code (allowed only upper case letters - underscore and numbers)"` // we assume that the code is unique
 	Image  string  `json:"image" valid:"base64"`
 }
+
+const (
+	RegexpMedicationName = "^[a-zA-Z0-9_-]*$"
+	RegexpMedicationCode = "^[A-Z0-9_]*$"
+)
