@@ -25,7 +25,9 @@ const (
 	ErrBuntdb                            = "err.database_related"
 	ErrBuntdbPopulated                   = "err.database_populated"
 	ErrBuntdbNotPopulated                = "err.database_not_populated"
-	ErrDroneMaximumLoadWeightExceededKey = "maximum load weight exceeded"
+	ErrDroneMaximumLoadWeightExceededKey = "err.drone_maximum_load_weight_exceeded"
+	ErrDroneVeryLowBatteryKey            = "err.drone_very_low_battery"
+	ErrDroneBusyKey                      = "err.drone_busy"
 	ErrBuntdbIndex                       = "err.database_index_related"
 	ErrStorageProc                       = "err.storage_service_processing"
 	ErrVal                               = "err.invalid_data"
@@ -59,6 +61,9 @@ const (
 var (
 	// ErrDroneMaximumLoadWeightExceeded the drone from being loaded with more weight that it can carry
 	ErrDroneMaximumLoadWeightExceeded = errors.New("maximum load weight exceeded")
+	ErrDroneVeryLowBattery            = errors.New("battery level is **below 25%**")
+	// ErrDroneBusy when the state of the drone is different from IDLE
+	ErrDroneBusy                      = errors.New("drone is busy")
 )
 
 // endregion =============================================================================

@@ -8,7 +8,6 @@ import (
 	"github.com/kmilodenisglez/drones.restapi/schema"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 	"github.com/tidwall/buntdb"
-	"log"
 )
 
 // region ======== SETUP =================================================================
@@ -55,7 +54,6 @@ func (s *svcDronesReqs) IsPopulateDBSvc() bool {
 }
 
 func (s *svcDronesReqs) PopulateDBSvc() *dto.Problem {
-	log.Println("1")
 	err := (*s.reposDrones).PopulateDB()
 
 	switch {
@@ -168,6 +166,13 @@ func (s *svcDronesReqs) LoadMedicationItemsADroneSvc(serialNumberDrone string, m
 	drone, errP := s.GetADroneSvc(serialNumberDrone)
 	if errP != nil {
 		return errP
+	}
+
+	// prevent the drone from being in LOADING state if the battery level is **below 25%**
+	if drone.BatteryCapacity < 25.0 {
+		return dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrDroneVeryLowBatteryKey, schema.ErrDroneVeryLowBattery.Error())
+	} else if drone.State != dto.IDLE {
+		return dto.NewProblem(iris.StatusPreconditionFailed, schema.ErrDroneBusyKey, schema.ErrDroneBusy.Error())
 	}
 
 	err := (*s.reposDrones).LoadMedicationItemsADrone(drone, medicationItemIDs)

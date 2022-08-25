@@ -425,6 +425,7 @@ func (r *repoDrones) LoadMedicationItemsADrone(drone *dto.Drone, medicationItemI
 		return err
 	}
 	log.Println("successfully loaded medication items")
+
 	return  nil
 }
 
