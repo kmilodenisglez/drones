@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/kmilodenisglez/drones.restapi/docs"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/iris-contrib/swagger/v12"              // swagger middleware for Iris
 	"github.com/iris-contrib/swagger/v12/swaggerFiles" // swagger embed files
@@ -9,7 +11,6 @@ import (
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kmilodenisglez/drones.restapi/api/endpoints"
 	"github.com/kmilodenisglez/drones.restapi/api/middlewares"
-	_ "github.com/kmilodenisglez/drones.restapi/docs"
 	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
 
@@ -30,6 +31,8 @@ import (
 
 // @BasePath /
 func main() {
+	docs.SwaggerInfo.BasePath = "/v1"
+
 	// region ======== GLOBALS ===============================================================
 	v := validator.New() // Validator instance. Reference https://github.com/kataras/iris/wiki/Model-validation | https://github.com/go-playground/validator
 

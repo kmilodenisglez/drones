@@ -30,6 +30,7 @@ type RepoDrones interface {
 	GetDrones(filter string) (*[]dto.Drone, error)
 	RegisterDrone(drone *dto.Drone) error
 	CheckingLoadedMedicationsItems(serialNumber string) (*[]string, error)
+	LoadMedicationItemsADrone(serialNumberDrone string, medicationItemIDs []interface{}) error
 	ExistDrone(serialNumber string) error
 
 	GetMedications() (*[]dto.Medication, error)
@@ -364,6 +365,32 @@ func (r *repoDrones) CheckingLoadedMedicationsItems(serialNumber string) (*[]str
 		return nil, err
 	}
 	return &loadedMeds, nil
+}
+
+func (r *repoDrones) LoadMedicationItemsADrone(serialNumberDrone string, medicationItemIDs []interface{}) error {
+	db, err := r.loadDB()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	log.Printf("loading a drone '%s' with medication items: %s", serialNumberDrone, medicationItemIDs)
+	err = db.Update(func(tx *buntdb.Tx) error {
+		res, err := jsoniter.MarshalToString(medicationItemIDs)
+		if err != nil {
+			return err
+		}
+		_, _, err = tx.Set("loaded_medications:"+serialNumberDrone, res, nil)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	log.Println("successfully loaded medication items")
+	return  nil
 }
 
 func (r *repoDrones) ExistDrone(serialNumber string) error {

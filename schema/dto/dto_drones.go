@@ -39,6 +39,8 @@ type ConfigDB struct {
 	IsPopulated bool `json:"isPopulated"`
 }
 
+// Drone model
+// @Description Drone item information
 type Drone struct {
 	SerialNumber    string     `json:"serialNumber" valid:"maxstringlength(100)"`
 	Model           DroneModel `json:"model" valid:"drone_enum_validation~unknown drone model"`
@@ -47,6 +49,9 @@ type Drone struct {
 	State           DroneState `json:"state" valid:"drone_enum_validation~unknown drone state"`
 }
 
+
+// Medication model
+// @Description Medication item information
 type Medication struct {
 	Name   string  `json:"name" valid:"medication_name_validation~invalid name (allowed only letters - numbers - ‘-‘ - ‘_’)"`
 	Weight float64 `json:"weight"`
@@ -55,6 +60,7 @@ type Medication struct {
 }
 
 const (
-	RegexpMedicationName = "^[a-zA-Z0-9_-]*$"
-	RegexpMedicationCode = "^[A-Z0-9_]*$"
+	RegexpMedicationName  = "^[a-zA-Z0-9_-]*$" // allowed only letters, numbers, ‘-‘, ‘_’
+	RegexpMedicationCode  = "^[A-Z0-9_]*$"     // allowed only upper case letters, underscore and numbers
+	MaxSerialNumberLength = "100"                // serial number (100 characters max)
 )

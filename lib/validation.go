@@ -2,14 +2,19 @@ package lib
 
 import (
 	"fmt"
-	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/kmilodenisglez/drones.restapi/schema/dto"
 	reg "regexp"
 )
 
-// ValidateMedicationCodeArray validate a string collection given a regular expression
-func ValidateMedicationCodeArray(data []interface{}, regexp string) bool {
+// ValidateString validate a string given a regular expression
+func ValidateString(data string, regexp string) bool {
+	return reg.MustCompile(regexp).MatchString(data)
+}
+
+// ValidateStringCollection validate a string collection given a regular expression
+func ValidateStringCollection(data []interface{}, regexp string) bool {
 	var fn govalidator.ConditionIterator = func(value interface{}, index int) bool {
 		fmt.Println(value.(string))
 		return reg.MustCompile(regexp).MatchString(value.(string))
@@ -36,4 +41,8 @@ func InitValidator() {
 	govalidator.TagMap["drone_enum_validation"] = func(str string) bool {
 		return str != "unknown"
 	}
+}
+
+func ValidateSerialNumberDrone(serialNumber string) bool {
+	return govalidator.MaxStringLength(serialNumber, dto.MaxSerialNumberLength)
 }

@@ -28,12 +28,13 @@ type ISvcDrones interface {
 	GetADroneSvc(serialNumber string) (*dto.Drone, *dto.Problem)
 	GetDronesSvc(filters ...string) (*[]dto.Drone, *dto.Problem)
 	RegisterDroneSvc(drone *dto.Drone) *dto.Problem
-	CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem)
 	ExistDroneSvc(serialNumber string) (bool, *dto.Problem)
 
 	// medication functions
 
 	GetMedicationsSvc() (*[]dto.Medication, *dto.Problem)
+	CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem)
+	LoadMedicationItemsADroneSvc(serialNumberDrone string, medicationItemIDs []interface{}) *dto.Problem
 }
 
 type svcDronesReqs struct {
@@ -120,6 +121,25 @@ func (s *svcDronesReqs) RegisterDroneSvc(drone *dto.Drone) *dto.Problem {
 	return nil
 }
 
+func (s *svcDronesReqs) ExistDroneSvc(serialNumber string) (bool, *dto.Problem) {
+	err := (*s.reposDrones).ExistDrone(serialNumber)
+	// Getting non-existent values will cause an ErrNotFound error.
+	if err == buntdb.ErrNotFound {
+		return false, nil
+	} else if err != nil {
+		return false, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+	return true, nil
+}
+
+func (s *svcDronesReqs) GetMedicationsSvc() (*[]dto.Medication, *dto.Problem) {
+	res, err := (*s.reposDrones).GetMedications()
+	if err != nil {
+		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+	}
+	return res, nil
+}
+
 func (s *svcDronesReqs) CheckingLoadedMedicationsItemsSvc(serialNumber string) (*[]string, *dto.Problem) {
 	// we check that the drone exists in the database
 	err := (*s.reposDrones).ExistDrone(serialNumber)
@@ -143,21 +163,10 @@ func (s *svcDronesReqs) CheckingLoadedMedicationsItemsSvc(serialNumber string) (
 	return res, nil
 }
 
-func (s *svcDronesReqs) ExistDroneSvc(serialNumber string) (bool, *dto.Problem) {
-	err := (*s.reposDrones).ExistDrone(serialNumber)
-	// Getting non-existent values will cause an ErrNotFound error.
-	if err == buntdb.ErrNotFound {
-		return false, nil
-	} else if err != nil {
-		return false, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
-	}
-	return true, nil
-}
-
-func (s *svcDronesReqs) GetMedicationsSvc() (*[]dto.Medication, *dto.Problem) {
-	res, err := (*s.reposDrones).GetMedications()
+func (s *svcDronesReqs) LoadMedicationItemsADroneSvc(serialNumberDrone string, medicationItemIDs []interface{}) *dto.Problem {
+	err := (*s.reposDrones).LoadMedicationItemsADrone(serialNumberDrone, medicationItemIDs)
 	if err != nil {
-		return nil, dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
+		return dto.NewProblem(iris.StatusExpectationFailed, schema.ErrBuntdb, err.Error())
 	}
-	return res, nil
+	return nil
 }
