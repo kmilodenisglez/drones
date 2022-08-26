@@ -43,8 +43,8 @@ To see the API specifications in more detail, run the app and visit the swagger 
 | ✅ | registering a drone;                                | 👉🏾 endpoint: `/api/v1/drones  [POST]`
 | ✅ | loading a drone with medication items;              | 👉🏾 endpoint: `/api/v1/medicationsitems/:serialNumber [POST]`
 | ✅ | checking loaded medication items for a given drone; | 👉🏾 endpoint: `/api/v1/medicationsitems/:serialNumber [GET]`
-| ✅ | checking available drones for loading;              | 👉🏾 endpoint: `drones?state=1 [GET]`
-| ✅ | check drone battery level for a given drone;        | 👉🏾 endpoint: `Get a drone by serialNumber [GET]`
+| ✅ | checking available drones for loading;              | 👉🏾 endpoint: `/api/v1/drones?state=1 [GET]`
+| ✅ | check drone battery level for a given drone;        | 👉🏾 endpoint: `/api/v1/drones/:serialNumber [GET], Get a drone by serialNumber`
 
 > The endpoints `/api/v1/drones  [POST]` and `/api/v1/medicationsitems/:serialNumber [POST]` can also be used to update.
 
