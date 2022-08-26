@@ -46,8 +46,19 @@ To see the API specifications in more detail, run the app and visit the swagger 
 | ✅ | checking available drones for loading;              | 👉🏾 endpoint: `drones?state=1 [GET]`
 | ✅ | check drone battery level for a given drone;        | 👉🏾 endpoint: `Get a drone by serialNumber [GET]`
 
+> The endpoints `/api/v1/drones  [POST]` and `/api/v1/medicationsitems/:serialNumber [POST]` can also be used to update.
 
-The endpoints `/api/v1/drones  [POST]` and `/api/v1/medicationsitems/:serialNumber [POST]` can also be used to update.
+| Done | Functional and Non-functional requirements |
+| -------------- | -----------|
+| ✅ | periodic task to check drones battery levels and create event log;
+| ✅ | prevent the drone from being loaded with more weight that it can carry;
+| ✅ | prevent the drone from being in LOADING state if the battery level is **below 25%**;
+| ✅ | Your project must be buildable and runnable;
+| ✅ | Your project must have a README file with build/run/test instructions (use DB file);
+| ✅ | Required data must be preloaded in the database.
+| ✅ | a bit of unit and end-to-end testing
+| ✅ | show us how you work through your commit history.
+
 
 
 ## 🛠️️ Configuration of conf.yaml <a name="config_file"></a>
