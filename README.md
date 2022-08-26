@@ -31,11 +31,13 @@ To see the API specifications in more detail, run the app and visit the swagger 
 ![swagger ui](/docs/images/swagger-ui.png)
 
 ## Assigned tasks <a name="assigned_task"></a>
-- ✅ registering a drone;                   👉🏾 endpoint: `/api/v1/drones  [POST]`
-- ✅ loading a drone with medication items; 👉🏾 endpoint: `/api/v1/medicationsitems/:serialNumber [POST]`
-- ✅ checking loaded medication items for a given drone; 👉🏾 endpoint: `/api/v1/medicationsitems/:serialNumber [GET]`
-- ✅ checking available drones for loading; 👉🏾 endpoint: `drones?state=1 [GET]`
-- ✅ check drone battery level for a given drone; 👉🏾 endpoint: `Get a drone by serialNumber [GET]`
+|  Done          | Task       | Endpoint                              |
+| -------------- | -----------|------------------------- |
+| ✅ | registering a drone;                                | 👉🏾 endpoint: `/api/v1/drones  [POST]`
+| ✅ | loading a drone with medication items;              | 👉🏾 endpoint: `/api/v1/medicationsitems/:serialNumber [POST]`
+| ✅ | checking loaded medication items for a given drone; | 👉🏾 endpoint: `/api/v1/medicationsitems/:serialNumber [GET]`
+| ✅ | checking available drones for loading;              | 👉🏾 endpoint: `drones?state=1 [GET]`
+| ✅ | check drone battery level for a given drone;        | 👉🏾 endpoint: `Get a drone by serialNumber [GET]`
 
 ## Tech <a name="tech"></a>
 * [Iris Web Framework](https://github.com/kataras/iris)
