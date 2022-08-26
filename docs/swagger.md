@@ -2,7 +2,7 @@
 To generate the OpenAPI specification run the fallowing command:
 
 ```shell
-$ swag init --parseDependency --parseInternal --parseDepth 1
+swag init --parseDependency --parseInternal --parseDepth 1 --md docs/md_endpoints
 ```
 [read more...](https://github.com/swaggo/swag/issues/817)
 

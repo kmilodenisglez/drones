@@ -1,7 +1,9 @@
 package lib
 
 import (
+	"errors"
 	"io/fs"
+	"os"
 	"path/filepath"
 )
 
@@ -51,4 +53,15 @@ func GetFilesByName(root, fileNeme string) []string {
 	})
 
 	return files
+}
+
+func FileExists(filename string) (bool, error) {
+	_, err := os.Stat(filename)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	return false, err
 }

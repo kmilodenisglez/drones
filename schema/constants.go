@@ -63,7 +63,7 @@ var (
 	ErrDroneMaximumLoadWeightExceeded = errors.New("maximum load weight exceeded")
 	ErrDroneVeryLowBattery            = errors.New("battery level is **below 25%**")
 	// ErrDroneBusy when the state of the drone is different from IDLE
-	ErrDroneBusy                      = errors.New("drone is busy")
+	ErrDroneBusy = errors.New("drone is busy")
 )
 
 // endregion =============================================================================
@@ -72,8 +72,8 @@ var (
 
 const (
 	// ENV VARS
-	EnvConfigPath = "HLF_DAPP_CONFIG"
-	EnvJWTSignKey = "HLF_DAPP_JWT_SIGN_KEY"
+	EnvConfigPath = "SERVER_CONFIG"
+	EnvJWTSignKey = "SERVER_JWT_SIGN_KEY"
 )
 
 // endregion =============================================================================

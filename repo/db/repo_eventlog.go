@@ -102,7 +102,7 @@ func (r *repoEventLog) CheckBatteryLevelsDrones(drones *[]dto.Drone) error {
 	if err != nil {
 		return err
 	}
-	log.Println("successfully added drone")
+	log.Println("successfully added event")
 
 	return nil
 }

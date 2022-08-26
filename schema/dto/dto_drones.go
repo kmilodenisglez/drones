@@ -85,3 +85,7 @@ type LogEvent struct {
 	UUID                string              `json:"uuid"`
 	DronesBatteryLevels []DroneBatteryLevel `json:"dronesBatteryLevels"`
 }
+
+type StatusMsg struct {
+	OK bool `json:"ok"`
+}

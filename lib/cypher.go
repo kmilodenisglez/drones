@@ -17,9 +17,7 @@ import (
 )
 
 // MkAccessToken create a signed JTW token with the specified data. This could be used for authentication purpose by a middleware
-func MkAccessToken(data *dto.AccessTokenData, sigKey []byte, tkAge uint8) ([]byte, error) {
-
-	// https://github.com/kataras/iris/blob/master/_examples/auth/jwt/middleware/main.go | https://github.com/iris-contrib/examples/blob/master/auth/jwt/basic/main.go
+func MkAccessToken(data *dto.AccessTokenData, sigKey []byte, tkAge uint8) ([]byte, error) { // https://github.com/kataras/iris/blob/master/_examples/auth/jwt/middleware/main.go | https://github.com/iris-contrib/examples/blob/master/auth/jwt/basic/main.go
 	tk, err := jwt.Sign(jwt.HS256, sigKey, data, jwt.MaxAge(time.Duration(tkAge)*time.Minute))
 	if err != nil { return nil, err }
 
@@ -32,6 +30,8 @@ func ComputeDID(data string) (string, error) {
 	base64Hash := base64.StdEncoding.EncodeToString(_hash[:])
 	return base64Hash, nil
 }
+
+const SHA256 = "SHA256"
 
 // Checksum returns the checksum of some data, using a specified algorithm.
 // It only returns an error when an invalid algorithm is used. The valid ones

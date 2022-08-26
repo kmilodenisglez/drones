@@ -36,6 +36,8 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 	// registering protected / guarded router
 	h := DronesHandler{svcR, &svc}
 
+	app.Get("/status", h.StatusServer)
+
 	// Simple group: v1
 	v1 := app.Party("/api/v1")
 	{
@@ -84,6 +86,10 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 		}
 	}
 	return h
+}
+
+func (h DronesHandler) StatusServer(ctx iris.Context) {
+	h.response.ResOKWithData(dto.StatusMsg{OK: true}, &ctx)
 }
 
 // PopulateDB
