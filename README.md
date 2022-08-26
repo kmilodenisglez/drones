@@ -1,6 +1,8 @@
 # 🛰 drones
 REST API that allows clients to communicate with drones (i.e. **dispatch controller**).
 
+> **NOTE**: Drones app has been tested on **Ubuntu 18.04** and on **Windows 10 with WSL** and Golang 1.16 was used.
+
 ## Table of Contents
 
 - [API specification](#api_spec)
@@ -31,7 +33,7 @@ The **Drone API server** provides the following API with communicating the **DB*
 
 To see the API specifications in more detail, run the app and visit the swagger docs:
 
-> http://127.0.0.1:7001/swagger/index.html
+> http://localhost:7001/swagger/index.html
 
 ![swagger ui](/docs/images/swagger-ui.png)
 
@@ -44,21 +46,25 @@ To see the API specifications in more detail, run the app and visit the swagger 
 | ✅ | checking available drones for loading;              | 👉🏾 endpoint: `drones?state=1 [GET]`
 | ✅ | check drone battery level for a given drone;        | 👉🏾 endpoint: `Get a drone by serialNumber [GET]`
 
+
+The endpoints `/api/v1/drones  [POST]` and `/api/v1/medicationsitems/:serialNumber [POST]` can also be used to update.
+
+
 ## 🛠️️ Configuration of conf.yaml <a name="config_file"></a>
 👉🏾 ![The config file](/conf/conf.yaml)
 
 |  Param      | Description       | default value   |
 | ----------- | -----------|------------------------- |
-| ApiDocIP    | IP to expose the api  | 127.0.0.1
+| APIDocIP    | IP to expose the api (unused)  | 127.0.0.1
 | DappPort    | app PORT              | 7001
 | StoreDBPath | DB file location      | ./db/data.db
 | CronEnabled | active the cron job   | true
 | LogDBPath   | DB file event logs    | ./db/event_log.db
 | EveryTime   | time interval (in seconds) that the cron task is executed | 300 seconds (every 5 minutes)
 
-By default **StoreDBPath** are using the database file located in the db folder at the root of the project.
+By default, **StoreDBPath** generates the database file in the /db folder at the root of the project.
 
-The already populated drone DB can be removed if desired. The server exposes the `/api/v1/database/populate` POST endpoint to generate and repopulate the database if necessary.
+The server exposes the `/api/v1/database/populate` POST endpoint to generate and repopulate the database whenever necessary.
 ## ⚡ Get Started <a name="get_started"></a>
 
 Download the drones.restapi project and move to root of project:
@@ -80,7 +86,7 @@ Use docker-compose to start the container:
 docker-compose up
 ```
 
-### 🔧 Manual way  <a name="manual_way"></a>
+#### 🔧 Manual way  <a name="manual_way"></a>
 
 Run:
 ```bash
@@ -92,14 +98,12 @@ go build
 #### 🌍 Environment variables
 The environment variable is exported with the location of the server configuration file.
 
-Run:
+If you have 🐧Linux or 🍎Dash, run:
 ```bash
-# linux, wsl or darwin
 export SERVER_CONFIG=$PWD/conf/conf.yaml
 ```
 but if it is in the windows cmd, then run:
 ```bash
-# windows cmd
 set SERVER_CONFIG=%cd%/conf/conf.yaml
 ```
 #### 🏃🏽‍♂️ Start the server
@@ -109,6 +113,16 @@ Run the server:
 ```bash
 ./drones.restapi
 ```
+
+and visit the swagger docs:
+
+> http://localhost:7001/swagger/index.html
+
+The first endpoint to execute must be /api/v1/database/populate [POST], to populate the database. That endpoint does not need authentication.
+
+![swagger ui](/docs/images/populate_endpoint.png)
+
+You can then authenticate and test the remaining endpoints.
 
 ### 🧪 Unit or End-To-End Testing
 Run:

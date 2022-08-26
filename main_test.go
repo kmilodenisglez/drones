@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/base64"
 
+	"github.com/kmilodenisglez/drones.restapi/repo/db"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/kmilodenisglez/drones.restapi/lib"
@@ -18,9 +20,19 @@ import (
 func TestNewApp(t *testing.T) {
 	// set environment variable
 	_ = os.Setenv(schema.EnvConfigPath, "./conf/conf.yaml")
-	app, _ := newApp()
+	app, config := newApp()
 	e := httptest.New(t, app)
 
+	repo := db.NewRepoDrones(config)
+
+	isPopulated := repo.IsPopulated()
+	if !isPopulated {
+		// populate database
+		err := repo.PopulateDB()
+		if err != nil {
+			t.Errorf("error populating the database")
+		}
+	}
 	// check server status
 	e.GET("/status").Expect().Status(httptest.StatusOK)
 

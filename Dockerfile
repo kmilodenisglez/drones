@@ -23,6 +23,9 @@ COPY . .
 
 RUN swag init --parseDependency --parseInternal --parseDepth 1 --md docs/md_endpoints
 RUN go mod vendor
+
+# testing
+RUN go test -v
 # Build the binary
 RUN go build -v -o ./out/drones-server .
 

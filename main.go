@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/iris-contrib/swagger/v12"              // swagger middleware for Iris
 	"github.com/iris-contrib/swagger/v12/swaggerFiles" // swagger embed files
@@ -68,26 +69,20 @@ func newApp() (*iris.Application, *utils.SvcConfig) {
 	// region ======== ENDPOINT REGISTRATIONS ================================================
 
 	endpoints.NewAuthHandler(app, &mdwAuthChecker, svcResponse, svcConfig)
-	endpoints.NewDronesHandler(app, &mdwAuthChecker, svcResponse, svcConfig) // Drones request handlers
+	endpoints.NewDronesHandler(app, &mdwAuthChecker, svcResponse, svcConfig)   // Drones request handlers
 	endpoints.NewEventLogHandler(app, &mdwAuthChecker, svcResponse, svcConfig) // EventLog request handlers
 	// endregion =============================================================================
 
 	// region ======== SWAGGER REGISTRATION ==================================================
-	// sc == swagger config
-	sc := &swagger.Config{
-		DeepLinking: true,
-		URL:         "http://" + svcConfig.APIDocIP + ":" + svcConfig.DappPort + "/swagger/apidoc.json", // The url pointing to API definition
-	}
-
 	// use swagger middleware to
-	app.Get("/swagger/{any:path}", swagger.CustomWrapHandler(sc, swaggerFiles.Handler))
+	app.Get("/swagger/{any:path}", swagger.WrapHandler(swaggerFiles.Handler))
 	// endregion =============================================================================
 
 	return app, svcConfig
 }
 
 // @title drones
-// @version 0.1
+// @version 0.2
 // @description REST API that allows clients to communicate with drones (i.e. **dispatch controller**)
 
 // @contact.name Kmilo Denis Glez
@@ -101,14 +96,13 @@ func newApp() (*iris.Application, *utils.SvcConfig) {
 // @BasePath /
 func main() {
 	app, svcConfig := newApp()
+
 	// region ======== Cron Job ==================================================
 	cronJob := cron.NewSvcRepoEventLog(svcConfig)
 	_ = cronJob.MeinerCronJob()
 	// endregion =============================================================================
 
-	addr := fmt.Sprintf("%s:%s", svcConfig.APIDocIP, svcConfig.DappPort)
-	// run localhost
-	// app.Listen(addr)
+	addr := fmt.Sprintf(":%s", svcConfig.DappPort)
 
 	app.Run(iris.Addr(addr))
 }

@@ -44,4 +44,4 @@ vendor
 #/docs/swagger.yaml
 #/docs/swagger.json
 
-/db/event_log.db
+/db/*.db
