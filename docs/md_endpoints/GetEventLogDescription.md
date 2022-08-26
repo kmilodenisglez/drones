@@ -1,4 +1,4 @@
-Only the last 4 logs are returned. They are ordered by creation date.
+z
 
 Example response body:
 ```json

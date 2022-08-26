@@ -187,14 +187,14 @@ func (r *repoDrones) GetUser(field string, filterOptional ...bool) (*dto.User, e
 			return err
 		}
 		// filter = false
-		value, err := tx.Get(field)
-		if err != nil {
-			return err
-		}
-		err = jsoniter.UnmarshalFromString(value, &user)
-		if err != nil {
-			return err
-		}
+		//value, err := tx.Get(field)
+		//if err != nil {
+		//	return err
+		//}
+		//err = jsoniter.UnmarshalFromString(value, &user)
+		//if err != nil {
+		//	return err
+		//}
 		return nil
 	})
 	if err != nil {

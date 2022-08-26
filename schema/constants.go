@@ -63,7 +63,7 @@ var (
 	ErrDroneMaximumLoadWeightExceeded = errors.New("maximum load weight exceeded")
 	ErrDroneVeryLowBattery            = errors.New("battery level is **below 25%**")
 	// ErrDroneBusy when the state of the drone is different from IDLE
-	ErrDroneBusy = errors.New("drone is busy")
+	ErrDroneBusy = errors.New("drone busy, select a drone in IDLE mode")
 )
 
 // endregion =============================================================================

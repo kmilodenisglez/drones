@@ -1,6 +1,10 @@
+# =====
+# ===== Only used  with docker,  use conf.yaml for manual deployment  ====
+# =====
+
+
 # =====   ENVIRONMENT  =======
 Debug: true
-# APIDocIP: 127.0.0.1            # Ip to expose the api documentation (currently unused)
 DappPort: 7001                 # The port this dapp will be running on
 
 # =====   Cryptographic configuration  =======
@@ -8,7 +12,7 @@ TkMaxAge: 180
 
 # =====   STORE DB  =======
 
-StoreDBPath: "./db/data.db"       # buntdb DB file location
+StoreDBPath: "/app/db/data.db"       # buntdb DB file location
 
 
 # =====   CRON JOB  =======
@@ -18,7 +22,7 @@ StoreDBPath: "./db/data.db"       # buntdb DB file location
 CronEnabled: true
 
 # LogEvent Database
-LogDBPath: "./db/event_log.db"    # buntdb DB for history/audit event log
+LogDBPath: "/app/db/event_log.db"    # buntdb DB for history/audit event log
 
 # time interval (in seconds) that the cron task is executed
 EveryTime: 300

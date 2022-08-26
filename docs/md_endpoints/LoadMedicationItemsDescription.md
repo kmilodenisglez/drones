@@ -1,1 +1,1 @@
-Load a drone with medication items
+Load or Update a drone with medication items

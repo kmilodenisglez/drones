@@ -8,7 +8,7 @@ services:
       - 7001:7001
     volumes:
       - ./db:/app/db
-      - ./conf:/app/conf
+      - ./conf/conf.docker.yaml:/app/conf/conf.yaml
     environment:
       SERVER_CONFIG: /app/conf/conf.yaml
     restart: on-failure
