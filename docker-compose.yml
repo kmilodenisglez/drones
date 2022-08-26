@@ -1,0 +1,21 @@
+version: '2.1'
+
+services:
+  app:
+    container_name: drones_server_0
+    image: drones_restapi:latest
+    ports:
+      - 7001:7001
+    volumes:
+      - ./db:/app/db
+      - ./conf:/app/conf
+    environment:
+      SERVER_CONFIG: /app/conf/conf.yaml
+    restart: on-failure
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -O
+        - '-'
+        - http://localhost:7001/status

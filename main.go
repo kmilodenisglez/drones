@@ -16,20 +16,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// @title drones
-// @version 0.1
-// @description REST API that allows clients to communicate with drones (i.e. **dispatch controller**)
-
-// @contact.name Kmilo Denis Glez
-// @contact.url https://github.com/kmilodenisglez
-// @contact.email kmilo.denis.glez@gmail.com
-
-// @authorizationurl https://example.com/oauth/authorize
-
-// TIPS This Ip here 👇🏽  must be change when compiling to deploy, can't figure out how to do it dynamically with Iris.
-
-// @BasePath /
-func main() {
+func newApp() (*iris.Application, *utils.SvcConfig) {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 
 	// region ======== GLOBALS ===============================================================
@@ -96,6 +83,24 @@ func main() {
 	app.Get("/swagger/{any:path}", swagger.CustomWrapHandler(sc, swaggerFiles.Handler))
 	// endregion =============================================================================
 
+	return app, svcConfig
+}
+
+// @title drones
+// @version 0.1
+// @description REST API that allows clients to communicate with drones (i.e. **dispatch controller**)
+
+// @contact.name Kmilo Denis Glez
+// @contact.url https://github.com/kmilodenisglez
+// @contact.email kmilo.denis.glez@gmail.com
+
+// @authorizationurl https://example.com/oauth/authorize
+
+// TIPS This Ip here 👇🏽  must be change when compiling to deploy, can't figure out how to do it dynamically with Iris.
+
+// @BasePath /
+func main() {
+	app, svcConfig := newApp()
 	// region ======== Cron Job ==================================================
 	cronJob := cron.NewSvcRepoEventLog(svcConfig)
 	_ = cronJob.MeinerCronJob()

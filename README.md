@@ -44,9 +44,21 @@ To see the API specifications in more detail, run the app and visit the swagger 
 | ✅ | checking available drones for loading;              | 👉🏾 endpoint: `drones?state=1 [GET]`
 | ✅ | check drone battery level for a given drone;        | 👉🏾 endpoint: `Get a drone by serialNumber [GET]`
 
-## 🛠️️ Configuration file <a name="config_file"></a>
-![config file](/conf/conf.yaml)
+## 🛠️️ Configuration of conf.yaml <a name="config_file"></a>
+👉🏾 ![The config file](/conf/conf.yaml)
 
+|  Param      | Description       | default value   |
+| ----------- | -----------|------------------------- |
+| ApiDocIP    | IP to expose the api  | 127.0.0.1
+| DappPort    | app PORT              | 7001
+| StoreDBPath | DB file location      | ./db/data.db
+| CronEnabled | active the cron job   | true
+| LogDBPath   | DB file event logs    | ./db/event_log.db
+| EveryTime   | time interval (in seconds) that the cron task is executed | 300 seconds (every 5 minutes)
+
+By default **StoreDBPath** are using the database file located in the db folder at the root of the project.
+
+The already populated drone DB can be removed if desired. The server exposes the `/api/v1/database/populate` POST endpoint to generate and repopulate the database if necessary.
 ## ⚡ Get Started <a name="get_started"></a>
 
 Download the drones.restapi project:
@@ -62,9 +74,13 @@ You can start the server in 2 ways, the first is using **docker** and **docker-c
 #### 📦 Docker way <a name="docker_way"></a>
 You will need docker and docker-compose in your system.
 
-Run:
+To builds Docker image from  Dockerfile, run:
 ```bash
-docker build --no-cache --rm --tag drones_restapi .
+docker build --no-cache --force-rm --tag drones_restapi .
+```
+Use docker-compose to start the container:
+```bash
+docker-compose up
 ```
 
 ### 🔧 Manual way  <a name="manual_way"></a>
@@ -109,4 +125,6 @@ go test -v
 * [govalidator](https://github.com/asaskevich/govalidator)
 * [gocron](https://github.com/go-co-op/gocron)
 * [swag](https://github.com/swaggo/swag)
+* [Docker](https://docs.docker.com)
+* [docker-compose](https://docs.docker.com/compose/)
 

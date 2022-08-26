@@ -40,6 +40,8 @@
 
 vendor
 /drones.restapi
-/docs/docs.go
-/docs/swagger.yaml
-/docs/swagger.json
+#/docs/docs.go
+#/docs/swagger.yaml
+#/docs/swagger.json
+
+/db/event_log.db
