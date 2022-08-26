@@ -30,7 +30,7 @@ var doc = `{
     "paths": {
         "/auth": {
             "post": {
-                "description": "Intent to grant authentication using the provider user's credentials",
+                "description": "Intent to grant authentication using the provider user's credentials and the specified  auth provider\r\n\r\nUser Credentials:\r\n\r\n|  Username   | Password    | \r\n| ----------- | -----------|\r\n| richard.sargon@meinermail.com | password1 |\r\n| tom.carter@meinermail.com | password2 |\r\n",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -429,7 +429,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Only the last 4 logs are returned. They are ordered by creation date.\r\n\r\nExample response body:\r\n` + "`" + `` + "`" + `` + "`" + `json\r\n[\r\n  {\r\n    \"created\": \"20220826-001857\",\r\n    \"uuid\": \"621259c9-bbbf-407e-ba32-40eca86e888f\",\r\n    \"dronesBatteryLevels\": [\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174003\",\r\n        \"batteryCapacity\": 99.2\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174007\",\r\n        \"batteryCapacity\": 91.3\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174008\",\r\n        \"batteryCapacity\": 73.6\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174002\",\r\n        \"batteryCapacity\": 56.4\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174005\",\r\n        \"batteryCapacity\": 52.9\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174001\",\r\n        \"batteryCapacity\": 45\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174004\",\r\n        \"batteryCapacity\": 35.6\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174010\",\r\n        \"batteryCapacity\": 25\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174009\",\r\n        \"batteryCapacity\": 25\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174006\",\r\n        \"batteryCapacity\": 25\r\n      }\r\n    ]\r\n  }\r\n  ...\r\n]\r\n` + "`" + `` + "`" + `` + "`" + `\r\n",
+                "description": "z\r\n\r\nExample response body:\r\n` + "`" + `` + "`" + `` + "`" + `json\r\n[\r\n  {\r\n    \"created\": \"20220826-001857\",\r\n    \"uuid\": \"621259c9-bbbf-407e-ba32-40eca86e888f\",\r\n    \"dronesBatteryLevels\": [\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174003\",\r\n        \"batteryCapacity\": 99.2\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174007\",\r\n        \"batteryCapacity\": 91.3\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174008\",\r\n        \"batteryCapacity\": 73.6\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174002\",\r\n        \"batteryCapacity\": 56.4\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174005\",\r\n        \"batteryCapacity\": 52.9\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174001\",\r\n        \"batteryCapacity\": 45\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174004\",\r\n        \"batteryCapacity\": 35.6\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174010\",\r\n        \"batteryCapacity\": 25\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174009\",\r\n        \"batteryCapacity\": 25\r\n      },\r\n      {\r\n        \"serialNumber\": \"123e4567-e89b-12d3-a456-426614174006\",\r\n        \"batteryCapacity\": 25\r\n      }\r\n    ]\r\n  }\r\n  ...\r\n]\r\n` + "`" + `` + "`" + `` + "`" + `\r\n",
                 "consumes": [
                     "application/json"
                 ],
@@ -488,7 +488,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "GetMedications request.\r\n\r\n🌎\r\n` + "`" + `` + "`" + `` + "`" + `` + "`" + `json\r\n\r\n` + "`" + `` + "`" + `` + "`" + `` + "`" + `\r\n",
+                "description": "Return the medication items\r\n\r\nTake the code medication item as the unique identifier.\r\n\r\nExample Response body:\r\n` + "`" + `` + "`" + `` + "`" + `` + "`" + `json\r\n[\r\n  {\r\n    \"name\": \"Hcj6VWVAzP1g\",\r\n    \"weight\": 700,\r\n    \"code\": \"OJ02IBPL0U\",\r\n    \"image\": \"ZmFrZV9pbWFnZQ==\"\r\n  },\r\n  {\r\n    \"name\": \"CANCAPITAL\",\r\n    \"weight\": 490,\r\n    \"code\": \"60FJFAQ93H\",\r\n    \"image\": \"ZmFrZV9pbWFnZQ==\"\r\n  },...\r\n]\r\n` + "`" + `` + "`" + `` + "`" + `` + "`" + `\r\n",
                 "consumes": [
                     "application/json"
                 ],
@@ -612,7 +612,7 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Load a drone with medication items",
+                "description": "Load or Update a drone with medication items",
                 "consumes": [
                     "application/json"
                 ],
@@ -641,8 +641,8 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "description": "Medication item ids' collection",
-                        "name": "medicationItemIDs",
+                        "description": "Medication item codes' collection",
+                        "name": "medicationItemCodes",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -831,7 +831,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "0.1",
+	Version:     "0.2",
 	Host:        "",
 	BasePath:    "/",
 	Schemes:     []string{},
