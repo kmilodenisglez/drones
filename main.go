@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/kmilodenisglez/drones.restapi/docs"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/iris-contrib/swagger/v12"              // swagger middleware for Iris
 	"github.com/iris-contrib/swagger/v12/swaggerFiles" // swagger embed files
@@ -11,9 +9,10 @@ import (
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kmilodenisglez/drones.restapi/api/endpoints"
 	"github.com/kmilodenisglez/drones.restapi/api/middlewares"
+	"github.com/kmilodenisglez/drones.restapi/docs"
 	"github.com/kmilodenisglez/drones.restapi/lib"
+	"github.com/kmilodenisglez/drones.restapi/service/cron"
 	"github.com/kmilodenisglez/drones.restapi/service/utils"
-
 	_ "github.com/lib/pq"
 )
 
@@ -83,23 +82,28 @@ func main() {
 
 	endpoints.NewAuthHandler(app, &mdwAuthChecker, svcResponse, svcConfig)
 	endpoints.NewDronesHandler(app, &mdwAuthChecker, svcResponse, svcConfig) // Drones request handlers
+	endpoints.NewEventLogHandler(app, &mdwAuthChecker, svcResponse, svcConfig) // EventLog request handlers
 	// endregion =============================================================================
 
 	// region ======== SWAGGER REGISTRATION ==================================================
 	// sc == swagger config
 	sc := &swagger.Config{
 		DeepLinking: true,
-		URL:         "http://" + svcConfig.ApiDocIp + ":" + svcConfig.DappPort + "/swagger/apidoc.json", // The url pointing to API definition
+		URL:         "http://" + svcConfig.APIDocIP + ":" + svcConfig.DappPort + "/swagger/apidoc.json", // The url pointing to API definition
 	}
 
 	// use swagger middleware to
 	app.Get("/swagger/{any:path}", swagger.CustomWrapHandler(sc, swaggerFiles.Handler))
 	// endregion =============================================================================
 
-	addr := fmt.Sprintf("%s:%s", svcConfig.ApiDocIp, svcConfig.DappPort)
+	// region ======== Cron Job ==================================================
+	cronJob := cron.NewSvcRepoEventLog(svcConfig)
+	_ = cronJob.MeinerCronJob()
+	// endregion =============================================================================
 
+	addr := fmt.Sprintf("%s:%s", svcConfig.APIDocIP, svcConfig.DappPort)
 	// run localhost
-	//app.Listen(addr)
+	// app.Listen(addr)
 
 	app.Run(iris.Addr(addr))
 }

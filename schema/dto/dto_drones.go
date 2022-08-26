@@ -74,3 +74,14 @@ const (
 	MaxSerialNumberLength = "100"              // serial number (100 characters max)
 	WeightLimitDrone      = 500                // weight limit (500gr max)
 )
+
+type DroneBatteryLevel struct {
+	SerialNumber    string  `json:"serialNumber"`
+	BatteryCapacity float64 `json:"batteryCapacity"`
+}
+
+type LogEvent struct {
+	Created             string              `json:"created"`
+	UUID                string              `json:"uuid"`
+	DronesBatteryLevels []DroneBatteryLevel `json:"dronesBatteryLevels"`
+}
