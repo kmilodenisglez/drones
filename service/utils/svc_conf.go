@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/schema"
 	"github.com/tkanos/gonfig"
@@ -41,9 +43,14 @@ func NewSvcConfig() *SvcConfig {
 	c := conf{}
 
 	var configPath = lib.GetEnvOrError(schema.EnvConfigPath)
-	var jwtSignKey = lib.GetEnvOrError(schema.EnvJWTSignKey)
+	var jwtSignKey = "secret__sample__with__32__chars_" // lib.GetEnvOrError(schema.EnvJWTSignKey)
 
-	err := gonfig.GetConf(configPath, &c) // getting the conf
+	exist, err := lib.FileExists(configPath)
+	if err != nil || !exist {
+		panic(fmt.Errorf("server config file not found, check the %s environment variable", schema.EnvConfigPath))
+	}
+
+	err = gonfig.GetConf(configPath, &c) // getting the conf
 	if err != nil {
 		panic(err)
 	} // error check

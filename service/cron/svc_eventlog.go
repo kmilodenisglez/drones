@@ -48,7 +48,10 @@ func (e svcEventLogReqs) MeinerCronJob() error {
 		log.Printf("schedules a new periodic Job with an interval: %d seconds", e.svcConf.EveryTime)
 		cron := gocron.NewScheduler(time.UTC)
 
-		cron.Every(e.svcConf.EveryTime).Seconds().Do(e.doFunc)
+		_, err := cron.Every(e.svcConf.EveryTime).Seconds().WaitForSchedule().Do(e.doFunc)
+		if err != nil {
+			return err
+		}
 		// starts the scheduler asynchronously
 		cron.StartAsync()
 	}

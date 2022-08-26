@@ -1,11 +1,11 @@
 package auth
 
 import (
+	"github.com/kataras/iris/v12"
 	"github.com/kmilodenisglez/drones.restapi/lib"
 	"github.com/kmilodenisglez/drones.restapi/repo/db"
 	"github.com/kmilodenisglez/drones.restapi/schema"
 	"github.com/kmilodenisglez/drones.restapi/schema/dto"
-	"github.com/kataras/iris/v12"
 )
 
 type Provider interface {
@@ -30,7 +30,7 @@ func (p *ProviderDrone) GrantIntent(uCred *dto.UserCredIn, options interface{}) 
 		return &dto.GrantIntentResponse{Identifier: user.Username, DID: user.Username}, nil
 	}
 
-	return nil, dto.NewProblem(iris.StatusNotFound, schema.ErrFile, schema.ErrCredsNotFound)
+	return nil, dto.NewProblem(iris.StatusUnauthorized, schema.ErrFile, schema.ErrCredsNotFound)
 }
 
 // endregion =============================================================================
