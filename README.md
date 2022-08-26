@@ -61,14 +61,11 @@ By default **StoreDBPath** are using the database file located in the db folder 
 The already populated drone DB can be removed if desired. The server exposes the `/api/v1/database/populate` POST endpoint to generate and repopulate the database if necessary.
 ## ⚡ Get Started <a name="get_started"></a>
 
-Download the drones.restapi project:
+Download the drones.restapi project and move to root of project:
 ```bash
-git clone https://github.com/kmilodenisglez/drones.restapi.git
+git clone https://github.com/kmilodenisglez/drones.restapi.git && cd drones.restapi 
 ```
-Move to the root of the project:
-```bash
-cd drones.restapi
-```
+
 ### 🚀 Deployment ways (2 ways)  <a name="deploy_ways"></a>
 You can start the server in 2 ways, the first is using **docker** and **docker-compose** and the second is **manually**
 #### 📦 Docker way <a name="docker_way"></a>
