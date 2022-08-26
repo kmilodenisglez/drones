@@ -40,7 +40,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 	svcDrones := service.NewSvcDronesReqs(&repoDrones)
 
 	// Simple group: v1
-	v1 := app.Party("/v1")
+	v1 := app.Party("/api/v1")
 	{
 		// registering unprotected router
 		authRouter := v1.Party("/auth") // authorize
@@ -78,7 +78,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 // region ======== ENDPOINT HANDLERS =====================================================
 
 // authIntent Intent to grant authentication using the provider user's credentials and the specified  auth provider
-// @Summary Auth the user credential
+// @Summary User authentication
 // @Description Intent to grant authentication using the provider user's credentials
 // @Tags Auth
 // @Accept multipart/form-data
@@ -118,6 +118,7 @@ func (h HAuth) authIntent(ctx iris.Context, uCred *dto.UserCredIn, svcAuth *auth
 }
 
 // logout this endpoint invalidated a previously granted access token
+// @Summary User logout
 // @Description This endpoint invalidated a previously granted access token
 // @Security ApiKeyAuth
 // @Param Authorization header string true "Insert access token" default(Bearer <Add access token here>)

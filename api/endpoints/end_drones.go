@@ -37,7 +37,7 @@ func NewDronesHandler(app *iris.Application, mdwAuthChecker *context.Handler, sv
 	h := DronesHandler{svcR, &svc}
 
 	// Simple group: v1
-	v1 := app.Party("/v1")
+	v1 := app.Party("/api/v1")
 	{
 		// registering unprotected router
 		authRouter := v1.Party("/database") // unauthorized

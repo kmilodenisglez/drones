@@ -30,7 +30,7 @@ import (
 
 // @BasePath /
 func main() {
-	docs.SwaggerInfo.BasePath = "/v1"
+	docs.SwaggerInfo.BasePath = "/api/v1"
 
 	// region ======== GLOBALS ===============================================================
 	v := validator.New() // Validator instance. Reference https://github.com/kataras/iris/wiki/Model-validation | https://github.com/go-playground/validator
