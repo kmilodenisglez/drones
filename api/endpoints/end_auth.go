@@ -54,7 +54,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 
 			// --- REGISTERING ENDPOINTS ---
 			// authRouter.Post("/<provider>")	// provider is the auth provider to be used.
-			authRouter.Post("/", hero.Handler(h.authIntent)) // using a provider named 'sisec', also injecting dependencies
+			authRouter.Post("/", hero.Handler(h.authIntent))
 		}
 
 		// registering protected router
@@ -79,7 +79,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 
 // authIntent Intent to grant authentication using the provider user's credentials and the specified  auth provider
 // @Summary User authentication
-// @Description Intent to grant authentication using the provider user's credentials
+// @description.markdown AuthIntent
 // @Tags Auth
 // @Accept multipart/form-data
 // @Produce json
@@ -91,6 +91,7 @@ func NewAuthHandler(app *iris.Application, mdwAuthChecker *context.Handler, svcR
 // @Failure 500 {object} dto.Problem "err.json_parse"
 // @Router /auth [post]
 func (h HAuth) authIntent(ctx iris.Context, uCred *dto.UserCredIn, svcAuth *auth.SvcAuthentication, r service.ISvcDrones) {
+	// using a provider named 'drones', also injecting dependencies
 	provider := "drones"
 
 	populate := r.IsPopulateDBSvc()
@@ -150,13 +151,12 @@ func (h HAuth) logout(ctx iris.Context) {
 // @Failure 500 {object} dto.Problem "err.generic
 // @Router /auth/user [get]
 func (h HAuth) userGet(ctx iris.Context, params dto.InjectedParam, r db.RepoDrones) {
-	user, err := r.GetUser(params.Did)
+	user, err := r.GetUser(params.Did, true)
 	if err != nil {
 		h.response.ResErr(dto.NewProblem(iris.StatusInternalServerError, schema.ErrBuntdb, err.Error()), &ctx)
 		return
 	}
-	l := map[string]*dto.User{"user": user}
-	h.response.ResOKWithData(l, &ctx)
+	h.response.ResOKWithData(user, &ctx)
 }
 
 // endregion =============================================================================

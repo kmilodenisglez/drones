@@ -28,7 +28,7 @@ func NewEventLogHandler(app *iris.Application, mdwAuthChecker *context.Handler, 
 	h := EventLogHandler{svcR, &svc}
 
 	// Simple group: v1
-	v1 := app.Party("/v1")
+	v1 := app.Party("/api/v1")
 	{
 		// registering protected / guarded router
 		guardTxsRouter := v1.Party("/logs")

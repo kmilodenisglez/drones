@@ -287,9 +287,9 @@ func (h DronesHandler) CheckingLoadedMedicationItems(ctx iris.Context) {
 // @Security ApiKeyAuth
 // @Accept  json
 // @Produce json
-// @Param	Authorization	   header	string 			true 	"Insert access token" default(Bearer <Add access token here>)
-// @Param   serialNumber       path     string          true    "Serial number of a drone"                                     Format(string)
-// @Param	medicationItemIDs  body	    []string		true	"Medication item ids' collection"
+// @Param	Authorization	     header	    string 			true 	"Insert access token" default(Bearer <Add access token here>)
+// @Param   serialNumber         path       string          true    "Serial number of a drone"                                     Format(string)
+// @Param	medicationItemCodes  body	    []string		true	"Medication item codes' collection"
 // @Success 204 "OK"
 // @Failure 401 {object} dto.Problem "err.unauthorized"
 // @Failure 400 {object} dto.Problem "err.processing_param"
@@ -319,7 +319,7 @@ func (h DronesHandler) LoadMedicationItems(ctx iris.Context) {
 	// if false, then there is at least one invalid medication item id
 	isValid = lib.ValidateStringCollection(medicationItemIDs, dto.RegexpMedicationCode)
 	if !isValid {
-		h.response.ResErr(&dto.Problem{Status: iris.StatusInternalServerError, Title: schema.ErrValidationField, Detail: "there is at least one invalid medication item ID"}, &ctx)
+		h.response.ResErr(&dto.Problem{Status: iris.StatusInternalServerError, Title: schema.ErrValidationField, Detail: "there is at least one medication item ID with invalid format"}, &ctx)
 		return
 	}
 
