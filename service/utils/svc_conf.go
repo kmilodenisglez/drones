@@ -9,18 +9,23 @@ import (
 // region ======== TYPES =================================================================
 
 // conf unexported configuration schema holder struct
-type conf struct {
-	// Environment
+type conf struct { //nolint:maligned
+	// ENVIRONMENT
 	Debug    bool
-	ApiDocIp string
+	APIDocIP string
 	DappPort string
 
 	// Cryptographic conf
 	JWTSignKey string
 	TkMaxAge   uint8
 
-	// Store
-	DbPath     string
+	// STORE DB
+	StoreDBPath string
+
+	// CRON JOB
+	CronEnabled bool
+	LogDBPath   string
+	EveryTime   int
 }
 
 // SvcConfig exported configuration service struct

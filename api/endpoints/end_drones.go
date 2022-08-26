@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"fmt"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"

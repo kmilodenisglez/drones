@@ -43,7 +43,7 @@ type repoDrones struct {
 // endregion =============================================================================
 
 func NewRepoDrones(svcConf *utils.SvcConfig) RepoDrones {
-	return &repoDrones{DBUserLocation: svcConf.DbPath}
+	return &repoDrones{DBUserLocation: svcConf.StoreDBPath}
 }
 
 // region ======== METHODS ===============================================================
@@ -152,8 +152,7 @@ func (r *repoDrones) PopulateDB() error {
 	return nil
 }
 
-// GetUser get the user from the DB file that should be compliant with the dto.UserList struct
-// return a list of dto.User
+// GetUser get the user from the DB
 func (r *repoDrones) GetUser(field string, filterOptional ...bool) (*dto.User, error) {
 	filter := false
 	if len(filterOptional) > 0 {
@@ -205,6 +204,7 @@ func (r *repoDrones) GetUser(field string, filterOptional ...bool) (*dto.User, e
 	return &user, nil
 }
 
+// GetUsers return a list of dto.User
 func (r *repoDrones) GetUsers() (*[]dto.User, error) {
 	// Open the data.db file. It will be created if it doesn't exist.
 	db, err := buntdb.Open(r.DBUserLocation)
@@ -500,7 +500,7 @@ func (r *repoDrones) loadDB() (*buntdb.DB, error) {
 }
 
 func isPopulated(db *buntdb.DB) bool {
-	log.Println("checking if it has already been populated")
+	log.Println("checking if StoreDB has already been populated")
 	configDB := dto.ConfigDB{}
 	db.CreateIndex("config", "config", buntdb.IndexString)
 	err := db.View(func(tx *buntdb.Tx) error {
