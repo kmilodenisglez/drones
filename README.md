@@ -12,7 +12,8 @@ REST API that allows clients to communicate with drones (i.e. **dispatch control
   * [Deployment ways (2 ways)](#deploy_ways)
     - [Docker way](#docker_way)
     - [Manual way](#manual_way)
-- [Tech](#tech)
+- [Tech and packages](#tech)
+- [Architecture](#arch)
 ## ⚙️API specification <a name="api_spec"></a>
 
 The **Drone API server** provides the following API with communicating the **DB**:
@@ -61,7 +62,7 @@ To see the API specifications in more detail, run the app and visit the swagger 
 
 
 
-## 🛠️️ Configuration of conf.yaml <a name="config_file"></a>
+## 🛠️️ Configuration file (conf.yaml) <a name="config_file"></a>
 👉🏾 ![The config file](/conf/conf.yaml)
 
 |  Param      | Description       | default value   |
@@ -150,3 +151,24 @@ go test -v
 * [Docker](https://docs.docker.com)
 * [docker-compose](https://docs.docker.com/compose/)
 
+## 📐 Architecture <a name="arch"></a>
+This project has 3 layer :
+
+- Controller Layer (Presentation)
+- Service Layer (Business)
+- Repository Layer (Persistence)
+
+
+Tag | Path | Layer |
+--- | ---- | ----- |
+Auth     | api/endpoints/end_auth.go | Controller | 
+Drones   | api/endpoints/end_drones.go |  Controller |
+EventLog | api/endpoints/end_eventlog.go |  Controller |
+ |  |  |
+Auth     | service/auth/svc_authentication.go | Service | 
+Drones   | service/svc_drones.go |  Service |
+EventLog | service/cron/svc_eventlog.go |  Service |
+ |  |  |
+Auth     | repo/db/repo_drones.go | Repository | 
+Drones   | repo/db/repo_drones.go |  Repository |
+EventLog | repo/db/repo_eventlog.go |  Repository |
