@@ -63,7 +63,7 @@ To see the API specifications in more detail, run the app and visit the swagger 
 
 
 ## 🛠️️ Configuration file (conf.yaml) <a name="config_file"></a>
-👉🏾 ![The config file](/conf/conf.yaml)
+👉🏾 [The config file](/conf/conf.yaml)
 
 |  Param      | Description       | default value   |
 | ----------- | -----------|------------------------- |
@@ -161,14 +161,14 @@ This project has 3 layer :
 
 Tag | Path | Layer |
 --- | ---- | ----- |
-Auth     | api/endpoints/end_auth.go | Controller | 
-Drones   | api/endpoints/end_drones.go |  Controller |
-EventLog | api/endpoints/end_eventlog.go |  Controller |
+Auth     | [end_auth.go](/api/endpoints/end_auth.go) | Controller | 
+Drones   | [end_drones.go](/api/endpoints/end_drones.go) |  Controller |
+EventLog | [end_eventlog.go](/api/endpoints/end_eventlog.go) |  Controller |
  |  |  |
-Auth     | service/auth/svc_authentication.go | Service | 
-Drones   | service/svc_drones.go |  Service |
-EventLog | service/cron/svc_eventlog.go |  Service |
+Auth     | [svc_authentication.go](/service/auth/svc_authentication.go) | Service | 
+Drones   | [svc_drones.go](/service/svc_drones.go) |  Service |
+EventLog | [svc_eventlog.go](/service/cron/svc_eventlog.go) |  Service |
  |  |  |
-Auth     | repo/db/repo_drones.go | Repository | 
-Drones   | repo/db/repo_drones.go |  Repository |
-EventLog | repo/db/repo_eventlog.go |  Repository |
+Auth     | [repo_drones.go](/repo/db/repo_drones.go) | Repository | 
+Drones   | [repo_drones.go](/repo/db/repo_drones.go) |  Repository |
+EventLog | [repo_eventlog.go](/repo/db/repo_eventlog.go) |  Repository |
